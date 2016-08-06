@@ -11,8 +11,8 @@ class Display {
 
     void setIntensity(byte intensity);
     
-    void Display::showDigit(int position, byte digit, boolean dot);
-    void Display::showChar(int position, char digit, boolean dot);
+    void showDigit(int position, byte digit, boolean dot);
+    void showChar(int position, char digit, boolean dot);
     void write(char* string);
     
   private:
