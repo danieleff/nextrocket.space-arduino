@@ -149,7 +149,7 @@ void update_display() {
   if (selected_menu == SELECTED_CYCLE && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
     display.write("ALL     ");
   } else if (selected_menu == SELECTED_NEXT && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
-    display.write("next    ");
+    display.write("NEXT    ");
   } else if (seconds_left % 60 == 59 || (millis() - selected_launch_changed_millis) < MENU_BUTTON_SHOW_NAME_MILLIS) {
     display.write(launches[selected_launch].name);
   } else {
