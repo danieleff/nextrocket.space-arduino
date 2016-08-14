@@ -5,8 +5,8 @@
 class Display {
   
   public:
-    Display(int din, int cs, int clk);
-    void setup();
+    void setup(byte din, byte cs, byte clk);
+    void reset();
     void loop();
 
     void setIntensity(byte intensity);
@@ -17,9 +17,9 @@ class Display {
     
   private:
     void send(volatile byte opcode, volatile byte data);
-    int din;
-    int cs;
-    int clk;
+    byte din;
+    byte cs;
+    byte clk;
 };
 
 #endif

@@ -1,11 +1,13 @@
 #include <Arduino.h>
 #include "display.h"
 
-#define OP_DECODEMODE  9
-#define OP_INTENSITY   10
-#define OP_SCANLIMIT   11
-#define OP_SHUTDOWN    12
-#define OP_DISPLAYTEST 15
+// https://datasheets.maximintegrated.com/en/ds/MAX7219-MAX7221.pdf
+
+const byte OP_DECODEMODE = 9;
+const byte OP_INTENSITY = 10;
+const byte OP_SCANLIMIT = 11;
+const byte OP_SHUTDOWN = 12;
+const byte OP_DISPLAYTEST = 15;
 
 const static byte charTable [] PROGMEM  = {
     B00000000,B00110000,B01101101,B01111001,B00110011,B01011011,B01011111,B01110000,//   0
@@ -26,7 +28,7 @@ const static byte charTable [] PROGMEM  = {
     B00110111,B00111011,B01101101,B00000000,B00000000,B00000000,B00000000,B00000000 // 120 xyz{|}~
 };
 
-Display::Display(int din, int cs, int clk) {
+void Display::setup(byte din, byte cs, byte clk) {
   this->din = din;
   this->cs = cs;
   this->clk = clk;
@@ -35,9 +37,10 @@ Display::Display(int din, int cs, int clk) {
   pinMode(clk, OUTPUT);
   pinMode(cs, OUTPUT);
   digitalWrite(cs, HIGH);
+  reset();
 }
 
-void Display::setup() {
+void Display::reset() {
   
   send(OP_DISPLAYTEST, 0); //displaytest
   send(OP_SCANLIMIT, 7); //scanlimit
@@ -46,7 +49,6 @@ void Display::setup() {
   send(OP_DECODEMODE, 0);
   
   send(OP_SHUTDOWN, 1); //shutdown false
-  
 }
 
 void Display::setIntensity(byte intensity) {

@@ -7,5 +7,7 @@ class LaunchtimeWifi {
     void loop();
 };
 
+//extern LaunchtimeWifi net;
+
 #endif
 

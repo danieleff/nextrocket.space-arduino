@@ -9,6 +9,8 @@
 
 #include <ESP8266HTTPClient.h>
 
+LaunchtimeWifi net;
+
 ESP8266WiFiMulti WiFiMulti;
 
 #define FAILED_REQUEST_RATE  20000 // Újrapróbálkozás milisec idő ha eddig nem sikerült lekérdezni

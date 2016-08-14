@@ -3,9 +3,10 @@
 
 class LaunchtimeEthernet {
   public:
-    void setup(char* data, int data_len);
-    void loop();
+    void setup();
 };
+
+extern LaunchtimeEthernet net;
 
 #endif
 
