@@ -11,7 +11,7 @@ const byte MAX_LAUNCH_COUNT = 8;
 
 struct launch_type {
   int32_t seconds_left;
-  char name[24];
+  char name[9];
 };
 
 class Settings {
