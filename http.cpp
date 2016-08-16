@@ -11,7 +11,9 @@ int offset = 0;
 
 char url_buffer[sizeof(settings.url_setting_part) + sizeof(settings.url_const_part) + sizeof(settings.url_user_part)];
 
-const char* parameter_rocket_selected = "?r=";
+const char* parameter_rocket_set_selected = "?r=";
+
+const char* parameter_rocket_get_selected = "/get_selected";
 
 HttpClient httpClient;
 
@@ -100,7 +102,7 @@ int main_page(char* request, char* response) {
 }
 
 int set_selected_rockets(char* request, char* response) {
-  char* start = strstr(request, parameter_rocket_selected) + strlen(parameter_rocket_selected);
+  char* start = strstr(request, parameter_rocket_set_selected) + strlen(parameter_rocket_set_selected);
   char* end = strstr(start, " ");
 
   int size = end - start;
@@ -121,6 +123,12 @@ int set_selected_rockets(char* request, char* response) {
   return bfill.position();
 }
 
+int get_selected_rockets(char* request, char* response) {
+  BufferFiller bfill = response;
+  bfill.emit_p(PSTR("HTTP/1.0 200 OK\r\n\r\n$S"), settings.url_user_part);
+  return bfill.position();
+}
+
 void HttpServer::loop() {
   
   word pos = ether.packetLoop(ether.packetReceive());
@@ -134,8 +142,10 @@ void HttpServer::loop() {
     Serial.write(request, strchr(request, '\n') - request);
     Serial.println();
 
-    if (strstr(request, parameter_rocket_selected)) {
+    if (strstr(request, parameter_rocket_set_selected)) {
       size = set_selected_rockets(request, response);
+    } else if (strstr(request, parameter_rocket_get_selected)) {
+      size = get_selected_rockets(request, response);
     } else {
       size = main_page(request, response);
     }

@@ -24,7 +24,7 @@ class Settings {
     int launch_count = 2;
     char website[24] = "danieleff.com";
     char url_setting_part[24] = "/launchtime/";
-    char url_user_part[120] = "falcon+9,falcon+heavy";
+    char url_user_part[32] = "3,4";
     byte intensity = 2;
     int selected_launch = 0; //selected launch index
     
