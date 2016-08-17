@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "display.h"
+#include "settings.h"
 
 // https://datasheets.maximintegrated.com/en/ds/MAX7219-MAX7221.pdf
 
@@ -45,7 +46,7 @@ void Display::reset() {
   send(OP_DISPLAYTEST, 0); //displaytest
   send(OP_SCANLIMIT, 7); //scanlimit
   
-  send(OP_INTENSITY, 8); //intensity
+  send(OP_INTENSITY, settings.intensity); //intensity
   send(OP_DECODEMODE, 0);
   
   send(OP_SHUTDOWN, 1); //shutdown false
