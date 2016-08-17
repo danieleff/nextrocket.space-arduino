@@ -14,6 +14,7 @@ class Display {
     void showDigit(int position, byte digit, boolean dot);
     void showChar(int position, char digit, boolean dot);
     void write(char* string);
+    void write(const __FlashStringHelper *string);
     
   private:
     void send(volatile byte opcode, volatile byte data);

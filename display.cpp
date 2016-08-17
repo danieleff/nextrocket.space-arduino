@@ -71,6 +71,14 @@ void Display::write(char* string) {
   
 }
 
+void Display::write(const __FlashStringHelper *string) {
+  PGM_P p = reinterpret_cast<PGM_P>(string);
+  for(int i=0;i<8;i++) {
+    send(8-i, pgm_read_byte_near(charTable + pgm_read_byte(p++)));
+  }
+}
+
+
 void Display::loop() {
   
 }
