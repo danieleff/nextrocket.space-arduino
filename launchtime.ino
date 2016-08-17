@@ -35,13 +35,16 @@ Display display;
 void setup () {
   Serial.begin(115200);
   Serial.println(F("setup()"));
+  
+  display.setup(PIN_DISPLAY_DIN, PIN_DISPLAY_LOAD, PIN_DISPLAY_CLK);
+  display.write(F("SETUP   "));
 
+  settings.loadFromEEPROM();
+  
   pinMode(PIN_BUTTON_INTENSITY, INPUT_PULLUP);
   pinMode(PIN_BUTTON_MENU, INPUT_PULLUP);
   pinMode(PIN_BUTTON_DEMO, INPUT_PULLUP);
   
-  display.setup(PIN_DISPLAY_DIN, PIN_DISPLAY_LOAD, PIN_DISPLAY_CLK);
-
   if (digitalRead(PIN_BUTTON_DEMO) == LOW) {
     demo_mode = true;
   }
@@ -52,9 +55,10 @@ void setup () {
 }
 
 void loop () {
-  httpServer.loop();
-  
-  httpClient.loop();
+  if (!demo_mode) {
+    httpServer.loop();
+    httpClient.loop();
+  }
 
   update_display();
 
@@ -84,6 +88,8 @@ void process_buttons() {
       if (settings.selected_menu >= settings.launch_count) {
         settings.selected_menu = SELECTED_CYCLE;
       }
+
+      settings.saveToEEPROM();
     }
   }
 }
@@ -117,7 +123,10 @@ void update_display() {
     display.write("ALL     ");
   } else if (settings.selected_menu == SELECTED_NEXT && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
     display.write("NEXT    ");
-  } else if (seconds_left % 60 == 59 || (millis() - selected_launch_changed_millis) < MENU_BUTTON_SHOW_NAME_MILLIS) {
+  } else if (
+        settings.launches[settings.selected_launch].seconds_left == 0
+        || seconds_left % 60 == 59 
+        || (millis() - selected_launch_changed_millis) < MENU_BUTTON_SHOW_NAME_MILLIS) {
     display.write(settings.launches[settings.selected_launch].name);
   } else {
     show(seconds_left);

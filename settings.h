@@ -17,28 +17,34 @@ struct launch_type {
 class Settings {
   
   public:
-    void load_from_EEPROM();
-    void save_to_EEPROM();
+    void loadFromEEPROM();
+    void saveToEEPROM();
 
     //Things to save
-    int launch_count = 2;
     char website[24] = "danieleff.com";
     char url_setting_part[24] = "/launchtime/";
     char url_user_part[32] = "3,4";
-    byte intensity = 2;
-    int selected_launch = 0; //selected launch index
+    uint8_t intensity = 2;
+    int8_t selected_menu = SELECTED_CYCLE;
+
+    //Things not to save
+    uint8_t launch_count = 1;
     
     //Thins not to save
     launch_type launches[MAX_LAUNCH_COUNT] = {
-      {10000, "Falcon 9"},
-      {20000, "Ariane  "},
-      {30000, "Mars    "},
-      {40000, "BFR     "},
-      {50000, "Testing "},
+      //{1000, "DEMO    "}, // Can be used for demo
+      {0, "LOADING "},
+      {0, "LOADING "},
+      {0, "LOADING "},
+      {0, "LOADING "},
+      {0, "LOADING "},
+      {0, "LOADING "},
+      {0, "LOADING "},
+      {0, "LOADING "},
     }; // Launches that can be displayed
-
-    int selected_menu = SELECTED_CYCLE;
-
+    
+    uint8_t selected_launch = 0; //selected launch index
+    
     char* url_const_part = "api.php?v=1&q=";
 
 };

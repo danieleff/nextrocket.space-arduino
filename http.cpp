@@ -115,6 +115,8 @@ int set_selected_rockets(char* request, char* response) {
 
   settings.url_user_part[size] = '\0';
 
+  settings.saveToEEPROM();
+
   httpClient.next_try_millis = millis();
 
   BufferFiller bfill = response;
