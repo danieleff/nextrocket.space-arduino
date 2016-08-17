@@ -29,9 +29,6 @@ void loop_error(char* error) {
 }
 
 void LaunchtimeEthernet::setup() {
-
-loop_error("DHCP ERR");
-  
   display.write("NET BOOT");
   if (ether.begin(sizeof Ethernet::buffer, mymac, PIN_ETHERNET_CS) == 0) {
       Serial.println(F("Failed to access Ethernet controller"));
