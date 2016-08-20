@@ -42,6 +42,10 @@ static void http_client_got_response (byte status, word off, word len) {
   }
   
   settings.launch_count = response[0];
+
+  if (settings.selected_menu > settings.launch_count) {
+    settings.selected_menu = SELECTED_CYCLE;
+  }
   
   memcpy(settings.launches + offset, response + 1, len);
   httpClient.info_downloaded_millis = millis();

@@ -32,12 +32,27 @@ boolean demo_mode = false;
 
 Display display;
 
+const char test[] = "FALCON HEAVY - DEMO FLIGHT";
+
 void setup () {
   Serial.begin(115200);
   Serial.println(F("setup()"));
   
   display.setup(PIN_DISPLAY_DIN, PIN_DISPLAY_LOAD, PIN_DISPLAY_CLK);
   display.write(F("SETUP   "));
+
+
+  int offset = 0;
+  while(true) {
+    char buffer[8];
+    for(int i = 0; i < 8; i++) {
+      buffer[i] = test[(i + offset) % sizeof(test)];
+    }
+    display.write(buffer);
+    offset ++;
+    delay(300);
+  }
+  
 
   settings.loadFromEEPROM();
   
