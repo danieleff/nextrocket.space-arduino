@@ -21,13 +21,13 @@ HttpServer httpServer;
 
 
 // called when the client request is complete
-static void http_client_got_response (byte status, word off, word len) {
+static void http_client_got_response (uint8_t status, uint16_t off, uint16_t len) {
   Serial.print(F("Got response, size with headers: "));
   Serial.print(len);
   
   int data_len = sizeof(settings.launches);
 
-  const char* response = Ethernet::buffer + off;
+  const char* response = (char*)Ethernet::buffer + off;
   if (offset == 0) {
     const char *response_without_header = strstr(response, "\r\n\r\n") + 4;
     len -= (response_without_header - response);
@@ -77,7 +77,7 @@ void HttpClient::loop() {
 
 
 int main_page(char* request, char* response) {
-  BufferFiller bfill = response;
+  BufferFiller bfill = (uint8_t*)response;
 
   char buffer1[sizeof(settings.website)];
   char buffer2[sizeof(settings.url_setting_part)];
@@ -123,14 +123,14 @@ int set_selected_rockets(char* request, char* response) {
 
   httpClient.next_try_millis = millis();
 
-  BufferFiller bfill = response;
+  BufferFiller bfill = (uint8_t*) response;
   bfill.emit_p(PSTR("HTTP/1.0 200 OK\r\n\r\n"));
   
   return bfill.position();
 }
 
 int get_selected_rockets(char* request, char* response) {
-  BufferFiller bfill = response;
+  BufferFiller bfill = (uint8_t*) response;
   bfill.emit_p(PSTR("HTTP/1.0 200 OK\r\n\r\n$S"), settings.url_user_part);
   return bfill.position();
 }
@@ -141,8 +141,8 @@ void HttpServer::loop() {
   if (pos) {
     int size;
     
-    char* request = (char *) Ethernet::buffer + pos;
-    char* response = ether.tcpOffset();
+    char* request = (char*) Ethernet::buffer + pos;
+    char* response = (char*) ether.tcpOffset();
 
     Serial.print(F("Http server received request: "));
     Serial.write(request, strchr(request, '\n') - request);

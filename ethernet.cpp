@@ -1,5 +1,3 @@
-#ifndef ESP8266
-
 #include "ethernet.h"
 #include "settings.h"
 #include "display.h"
@@ -63,6 +61,4 @@ void LaunchtimeEthernet::setup() {
     
   ether.persistTcpConnection(true);
 }
-
-#endif
 

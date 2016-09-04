@@ -30,21 +30,22 @@ void Settings::loadFromEEPROM() {
 }
 
 void Settings::saveToEEPROM() {
-  for(int i = 0; i < sizeof(website); i++) {
-    EEPROM.update(ROM_WEBSITE_START + i, website[i]);
-  }
-  for(int i = 0; i < sizeof(url_setting_part); i++) {
-    EEPROM.update(ROM_URL_SETTINGS_START + i, url_setting_part[i]);
-  }
-  for(int i = 0; i < sizeof(url_user_part); i++) {
-    EEPROM.update(ROM_URL_PART_START + i, url_user_part[i]);
-  }
-  EEPROM.update(ROM_INTENSITY_START, intensity);
-  EEPROM.update(ROM_SELECTED_MENU_START, selected_menu);
-  
-  EEPROM.update(0, ROM_HEADER_ID);
-  EEPROM.update(1, ROM_HEADER_VERSION);
-
+  #ifndef ESP8266
+    for(int i = 0; i < sizeof(website); i++) {
+      EEPROM.update(ROM_WEBSITE_START + i, website[i]);
+    }
+    for(int i = 0; i < sizeof(url_setting_part); i++) {
+      EEPROM.update(ROM_URL_SETTINGS_START + i, url_setting_part[i]);
+    }
+    for(int i = 0; i < sizeof(url_user_part); i++) {
+      EEPROM.update(ROM_URL_PART_START + i, url_user_part[i]);
+    }
+    EEPROM.update(ROM_INTENSITY_START, intensity);
+    EEPROM.update(ROM_SELECTED_MENU_START, selected_menu);
+    
+    EEPROM.update(0, ROM_HEADER_ID);
+    EEPROM.update(1, ROM_HEADER_VERSION);
+  #endif
   
 }
 
