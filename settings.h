@@ -21,9 +21,9 @@ class Settings {
     void saveToEEPROM();
 
     //Things to save
-    char website[24] = "danieleff.com";
-    char url_setting_part[24] = "/launchtime/";
-    char url_user_part[32] = "a,b";
+    char website[24] = "launchtime.space";
+    char url_setting_part[24] = "/";
+    char url_user_part[32] = "0l";
     uint8_t intensity = 6;
     int8_t selected_menu = SELECTED_CYCLE;
 
