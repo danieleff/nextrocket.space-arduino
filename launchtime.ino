@@ -4,9 +4,6 @@
 #include "http.h"
 #include "settings.h"
 
-const byte PIN_BUTTON_INTENSITY = 5;
-const byte PIN_BUTTON_MENU = 2;
-const byte PIN_BUTTON_DEMO = 4;
 
 const uint32_t SELECTED_CYCLE_DELAY_MILLIS = 10000;
 const uint32_t MENU_BUTTON_SHOW_MENU_MILLIS = 1500;
@@ -17,39 +14,43 @@ const uint32_t MENU_BUTTON_SHOW_NAME_MILLIS = 3000;
   const byte PIN_DISPLAY_DIN = 16;
   const byte PIN_DISPLAY_CLK = 14;
   const byte PIN_DISPLAY_LOAD = 12;
+  const byte PIN_BUTTON_INTENSITY = 5;
+  const byte PIN_BUTTON_MENU = 2;
+  const byte PIN_BUTTON_DEMO = 4;
+
 #else 
   //Pins with arduino nano + ethernet
   const byte PIN_DISPLAY_DIN = 7;
   const byte PIN_DISPLAY_CLK = 6;
   const byte PIN_DISPLAY_LOAD = 5;
+  
+  const byte PIN_BUTTON_INTENSITY = 8;
+  const byte PIN_BUTTON_MENU = 9;
+  const byte PIN_BUTTON_DEMO = 4;
 #endif
 
 uint32_t selected_launch_changed_millis = 0;
 uint32_t button_intensity_millis = 0; // when was the last button pressed
 uint32_t button_menu_millis = 0; // when was the last button pressed
 
-boolean use_ethernet = false;
+boolean use_ethernet = true;
 
 Display display;
 
 void setup () {
   Serial.begin(115200);
   Serial.println(F("setup()"));
-
-Serial.println(F("a"));
   
   display.setup(PIN_DISPLAY_DIN, PIN_DISPLAY_LOAD, PIN_DISPLAY_CLK);
-Serial.println(F("b"));
+  
   display.write(F("SETUP   "));
-Serial.println(F("c"));
-  settings.loadFromEEPROM();
-Serial.println(F("d"));
+  
+  //settings.loadFromEEPROM();
+  
   pinMode(PIN_BUTTON_INTENSITY, INPUT_PULLUP);
-Serial.println(F("e"));
   pinMode(PIN_BUTTON_MENU, INPUT_PULLUP);
-Serial.println(F("f"));
   pinMode(PIN_BUTTON_DEMO, INPUT_PULLUP);
-Serial.println(F("g"));
+  
   if (digitalRead(PIN_BUTTON_DEMO) == LOW) {
     use_ethernet = false;
   }

@@ -95,7 +95,7 @@ int main_page(char* request, char* response) {
       "<script src=\"http://$S$S/jquery.min.js\"></script>"
       "</head>"
       "<body>"
-      "<h1>Launchtime</h1>"
+      "<h1>nextrocket.space</h1>"
       "<table id=\"launch_table\" class=\"launch_table\"></table>"
       "<script type='text/javascript'>init_embedded();</script>"
       "</body>"
