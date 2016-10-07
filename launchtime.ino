@@ -1,6 +1,6 @@
 #include "ethernet.h"
 #include "wifi.h"
-#include "display.h"
+#include "digit_display.h"
 #include "http.h"
 #include "settings.h"
 
@@ -35,15 +35,15 @@ uint32_t button_menu_millis = 0; // when was the last button pressed
 
 boolean use_ethernet = true;
 
-Display display;
+DigitDisplay digitDisplay;
 
 void setup () {
   Serial.begin(115200);
   Serial.println(F("setup()"));
   
-  display.setup(PIN_DISPLAY_DIN, PIN_DISPLAY_LOAD, PIN_DISPLAY_CLK);
+  digitDisplay.setup(PIN_DISPLAY_DIN, PIN_DISPLAY_LOAD, PIN_DISPLAY_CLK);
   
-  display.write(F("SETUP   "));
+  digitDisplay.write(F("SETUP   "));
   
   //settings.loadFromEEPROM();
   
@@ -90,10 +90,10 @@ void process_buttons() {
     if (digitalRead(PIN_BUTTON_INTENSITY) == LOW) {
       button_intensity_millis = millis();
       
-      display.reset();
+      digitDisplay.reset();
       
       settings.intensity += 4;
-      display.setIntensity(settings.intensity);
+      digitDisplay.setIntensity(settings.intensity);
     }
   }
 
@@ -139,20 +139,57 @@ void update_display() {
   int32_t seconds_left = settings.launches[settings.selected_launch].seconds_left - (millis() - httpClient.info_downloaded_millis) / 1000;
 
   if (settings.selected_menu == SELECTED_CYCLE && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
-    display.write("ALL     ");
+    digitDisplay.write("ALL     ");
   } else if (settings.selected_menu == SELECTED_NEXT && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
-    display.write("NEXT    ");
+    digitDisplay.write("NEXT    ");
   } else if (
         settings.launches[settings.selected_launch].seconds_left == 0
         || seconds_left % 60 == 59 
         || (millis() - selected_launch_changed_millis) < MENU_BUTTON_SHOW_NAME_MILLIS) {
-    display.write(settings.launches[settings.selected_launch].name);
+    digitDisplay.write(settings.launches[settings.selected_launch].name);
   } else {
-    show(seconds_left);
+    show_seconds_left_digit_display(seconds_left);
   }
+
+  //show_ip_digit_display();
 }
 
-void show(int32_t time) {
+
+char* intToString(int i, char* chr) {
+  if (i > 99) chr++;
+  if (i > 9) chr++;
+
+  char* ret = chr;
+  do {
+    *chr-- = (i % 10) + '0';
+    i /= 10;
+  } while(i);
+  return ret+1;
+}
+
+void show_ip_digit_display() {
+  static char ipString[3 + 4*4 + 1];
+  char *chr = ipString;
+  //*chr++ = 'I';
+  //*chr++ = 'P' | 0x80;
+  //*chr++ = 0x80;
+  
+  chr = intToString(ether.myip[0], chr);
+  *(chr-1) |= 0x80;
+  chr = intToString(ether.myip[1], chr);
+  *(chr-1) |= 0x80;
+  chr = intToString(ether.myip[2], chr);
+  *(chr-1) |= 0x80;
+  chr = intToString(ether.myip[3], chr);
+  *(chr-1) |= 0x80;
+  *chr = 0;
+  
+  //Serial.println(strlen(ipString));
+  
+  digitDisplay.write(ipString + ((millis() / 1000) % (strlen(ipString)- 8 + 1)));
+}
+
+void show_seconds_left_digit_display(int32_t time) {
   boolean negative = false;
   if (time < 0) {
     negative = true;
@@ -164,21 +201,21 @@ void show(int32_t time) {
   long hours = (time / 60 / 60) % 24;
   long days = (time / 60 / 60 / 24);
 
-  display.showDigit(0, seconds % 10, false);
-  display.showDigit(1, seconds / 10, false);
+  digitDisplay.showDigit(0, seconds % 10, false);
+  digitDisplay.showDigit(1, seconds / 10, false);
 
-  display.showDigit(2, minutes % 10, true);
-  display.showDigit(3, minutes / 10, false);
+  digitDisplay.showDigit(2, minutes % 10, true);
+  digitDisplay.showDigit(3, minutes / 10, false);
   
-  display.showDigit(4, hours % 10, true);
-  display.showDigit(5, hours / 10, false);
+  digitDisplay.showDigit(4, hours % 10, true);
+  digitDisplay.showDigit(5, hours / 10, false);
 
-  display.showDigit(6, days % 10, true);
+  digitDisplay.showDigit(6, days % 10, true);
   
   if (negative) {
-    display.showChar(7, '-', false);
+    digitDisplay.showChar(7, '-', false);
   } else {
-    display.showDigit(7, days / 10, false);
+    digitDisplay.showDigit(7, days / 10, false);
   }
   
 }

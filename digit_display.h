@@ -1,8 +1,8 @@
-#ifndef DISPLAY_H
-#define DISPLAY_H
+#ifndef DIGIT_DISPLAY_H
+#define DIGIT_DISPLAY_H
 
 
-class Display {
+class DigitDisplay {
   
   public:
     void setup(byte din, byte cs, byte clk);

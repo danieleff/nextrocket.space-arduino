@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "display.h"
+#include "digit_display.h"
 #include "settings.h"
 
 // https://datasheets.maximintegrated.com/en/ds/MAX7219-MAX7221.pdf
@@ -29,7 +29,7 @@ const static byte charTable [] PROGMEM  = {
     B00110111,B00111011,B01101101,B00000000,B00000000,B00000000,B00000000,B00000000 // 120 xyz{|}~
 };
 
-void Display::setup(byte din, byte cs, byte clk) {
+void DigitDisplay::setup(byte din, byte cs, byte clk) {
   this->din = din;
   this->cs = cs;
   this->clk = clk;
@@ -41,7 +41,7 @@ void Display::setup(byte din, byte cs, byte clk) {
   reset();
 }
 
-void Display::reset() {
+void DigitDisplay::reset() {
   
   send(OP_DISPLAYTEST, 0); //displaytest
   send(OP_SCANLIMIT, 7); //scanlimit
@@ -52,27 +52,34 @@ void Display::reset() {
   send(OP_SHUTDOWN, 1); //shutdown false
 }
 
-void Display::setIntensity(byte intensity) {
+void DigitDisplay::setIntensity(byte intensity) {
   send(OP_INTENSITY, intensity & 0x0F);
 }
 
-void Display::showDigit(int position, byte digit, boolean dot) {
+void DigitDisplay::showDigit(int position, byte digit, boolean dot) {
   showChar(position, digit + '0', dot);
 }
 
-void Display::showChar(int position, char digit, boolean dot) {
+void DigitDisplay::showChar(int position, char digit, boolean dot) {
   send(position + 1, pgm_read_byte_near(charTable + digit) | (dot ? 0x80 : 0));
 }
 
-void Display::write(char* string) {
-  
-  for(int i=0;i<8;i++) {
-    send(8-i, pgm_read_byte_near(charTable + string[i]));
+void DigitDisplay::write(char* string) {
+  for(int i = 0; i < 8; i++) {
+    uint8_t b = 0;
+    
+    char chr = string[i];
+    if (chr >> 7) {
+      chr &= 0x7F;
+      b = 0x80;
+    }
+    b |= pgm_read_byte_near(charTable + chr);
+    send(8-i, b);
   }
   
 }
 
-void Display::write(const __FlashStringHelper *string) {
+void DigitDisplay::write(const __FlashStringHelper *string) {
   PGM_P p = reinterpret_cast<PGM_P>(string);
   for(int i=0;i<8;i++) {
     send(8-i, pgm_read_byte_near(charTable + pgm_read_byte(p++)));
@@ -80,12 +87,12 @@ void Display::write(const __FlashStringHelper *string) {
 }
 
 
-void Display::loop() {
+void DigitDisplay::loop() {
   
 }
 
 
-void Display::send(volatile byte opcode, volatile byte data) {
+void DigitDisplay::send(volatile byte opcode, volatile byte data) {
   digitalWrite(cs,LOW);
   
   shiftOut(din, clk, MSBFIRST, opcode);

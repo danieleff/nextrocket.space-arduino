@@ -1,14 +1,12 @@
 #include "ethernet.h"
 #include "settings.h"
-#include "display.h"
-
-#include <EtherCard.h>
+#include "digit_display.h"
 
 #define PIN_ETHERNET_CS 10
 
 LaunchtimeEthernet net;
 
-extern Display display;
+extern DigitDisplay digitDisplay;
 
 // ethernet interface mac address
 static byte mymac[] = { 0x74,0x61,0x62,0x2D,0x30,0x31 };
@@ -19,15 +17,15 @@ extern uint32_t info_downloaded_millis;
 
 void loop_error(char* error) {
   while(1) {
-    display.write(error);
+    digitDisplay.write(error);
     delay(800);
-    display.write(F("        "));
+    digitDisplay.write(F("        "));
     delay(200);
   }
 }
 
 void LaunchtimeEthernet::setup() {
-  display.write(F("NET BOOT"));
+  digitDisplay.write(F("NET BOOT"));
   
   Serial.println(F("Starting up ethernet"));
   if (ether.begin(sizeof Ethernet::buffer, mymac, PIN_ETHERNET_CS) == 0) {
@@ -37,7 +35,7 @@ void LaunchtimeEthernet::setup() {
   }
 
 
-  display.write(F("GET DHCP"));
+  digitDisplay.write(F("GET DHCP"));
   Serial.println(F("Get DHCP"));
   if (!ether.dhcpSetup()) {
       Serial.println(F("DHCP failed"));
@@ -49,7 +47,7 @@ void LaunchtimeEthernet::setup() {
   ether.printIp(F("GW IP: "), ether.gwip);
   ether.printIp(F("DNS IP: "), ether.dnsip);
 
-  display.write(F("GET DNS"));
+  digitDisplay.write(F("GET DNS"));
   Serial.println(F("Get DNS"));
   if (!ether.dnsLookup(settings.website, true)) {
       Serial.println(F("DNS failed"));
