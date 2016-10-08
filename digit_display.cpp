@@ -29,7 +29,7 @@ const static byte charTable [] PROGMEM  = {
     B00110111,B00111011,B01101101,B00000000,B00000000,B00000000,B00000000,B00000000 // 120 xyz{|}~
 };
 
-void DigitDisplay::setup(byte din, byte cs, byte clk) {
+void DigitDisplay::setup(uint8_t din, uint8_t cs, uint8_t clk) {
   this->din = din;
   this->cs = cs;
   this->clk = clk;
@@ -52,11 +52,11 @@ void DigitDisplay::reset() {
   send(OP_SHUTDOWN, 1); //shutdown false
 }
 
-void DigitDisplay::setIntensity(byte intensity) {
+void DigitDisplay::setIntensity(uint8_t intensity) {
   send(OP_INTENSITY, intensity & 0x0F);
 }
 
-void DigitDisplay::showDigit(int position, byte digit, boolean dot) {
+void DigitDisplay::showDigit(int position, uint8_t digit, boolean dot) {
   showChar(position, digit + '0', dot);
 }
 

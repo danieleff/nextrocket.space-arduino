@@ -1,17 +1,18 @@
 #ifndef DIGIT_DISPLAY_H
 #define DIGIT_DISPLAY_H
 
+#include <Arduino.h>
 
 class DigitDisplay {
   
   public:
-    void setup(byte din, byte cs, byte clk);
+    void setup(uint8_t din, uint8_t cs, uint8_t clk);
     void reset();
     void loop();
 
-    void setIntensity(byte intensity);
+    void setIntensity(uint8_t intensity);
     
-    void showDigit(int position, byte digit, boolean dot);
+    void showDigit(int position, uint8_t digit, boolean dot);
     void showChar(int position, char digit, boolean dot);
     void write(char* string);
     void write(const __FlashStringHelper *string);

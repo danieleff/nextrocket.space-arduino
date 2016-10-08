@@ -28,6 +28,9 @@ static void http_client_got_response (uint8_t status, uint16_t off, uint16_t len
   int data_len = sizeof(settings.launches);
 
   const char* response = (char*)Ethernet::buffer + off;
+  
+  Serial.println(response);
+  
   if (offset == 0) {
     const char *response_without_header = strstr(response, "\r\n\r\n") + 4;
     len -= (response_without_header - response);
@@ -68,7 +71,7 @@ void HttpClient::loop() {
     Serial.print(F("Http client sending request to: "));
     Serial.println(url_buffer);
     
-    ether.browseUrl(PSTR(""), url_buffer, PSTR(""), http_client_got_response);
+    ether.browseUrl(PSTR(""), url_buffer, settings.website, http_client_got_response);
   }
 }
 
