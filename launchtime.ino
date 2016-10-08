@@ -33,7 +33,7 @@ void setup () {
   
   displays.write(F("SETUP   "));
   
-  //settings.loadFromEEPROM();
+  settings.loadFromEEPROM();
   
   pinMode(PIN_BUTTON_INTENSITY, INPUT_PULLUP);
   pinMode(PIN_BUTTON_MENU, INPUT_PULLUP);

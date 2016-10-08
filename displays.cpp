@@ -79,7 +79,7 @@ void show_ip_digit_display() {
   digitDisplay.write(ipString + ((millis() / 1000) % (strlen(ipString)- 8 + 1)));
 }
 
-void show_seconds_left_digit_display(int32_t time) {
+void show_seconds_left_digit_display(int32_t time, boolean onDigitDisplay) {
   boolean negative = false;
   if (time < 0) {
     negative = true;
@@ -91,21 +91,23 @@ void show_seconds_left_digit_display(int32_t time) {
   long hours = (time / 60 / 60) % 24;
   long days = (time / 60 / 60 / 24);
 
-  digitDisplay.showDigit(0, seconds % 10, false);
-  digitDisplay.showDigit(1, seconds / 10, false);
-
-  digitDisplay.showDigit(2, minutes % 10, true);
-  digitDisplay.showDigit(3, minutes / 10, false);
+  if (onDigitDisplay) {
+    digitDisplay.showDigit(0, seconds % 10, false);
+    digitDisplay.showDigit(1, seconds / 10, false);
   
-  digitDisplay.showDigit(4, hours % 10, true);
-  digitDisplay.showDigit(5, hours / 10, false);
-
-  digitDisplay.showDigit(6, days % 10, true);
+    digitDisplay.showDigit(2, minutes % 10, true);
+    digitDisplay.showDigit(3, minutes / 10, false);
+    
+    digitDisplay.showDigit(4, hours % 10, true);
+    digitDisplay.showDigit(5, hours / 10, false);
   
-  if (negative) {
-    digitDisplay.showChar(7, '-', false);
-  } else {
-    digitDisplay.showDigit(7, days / 10, false);
+    digitDisplay.showDigit(6, days % 10, true);
+    
+    if (negative) {
+      digitDisplay.showChar(7, '-', false);
+    } else {
+      digitDisplay.showDigit(7, days / 10, false);
+    }
   }
 
   charDisplay.setCursor(0,1);
@@ -150,15 +152,22 @@ void Displays::loop() {
 
   if (settings.selected_menu == SELECTED_CYCLE && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
     write("ALL     ");
+    show_seconds_left_digit_display(seconds_left, false);
+    
   } else if (settings.selected_menu == SELECTED_NEXT && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
     write("NEXT    ");
+    show_seconds_left_digit_display(seconds_left, false);
+    
   } else if (
         settings.launches[settings.selected_launch].seconds_left == 0
         || seconds_left % 60 == 59 
         || (millis() - selected_launch_changed_millis) < MENU_BUTTON_SHOW_NAME_MILLIS) {
     write(settings.launches[settings.selected_launch].name);
+    
+    show_seconds_left_digit_display(seconds_left, false);
   } else {
-    show_seconds_left_digit_display(seconds_left);
+    
+    show_seconds_left_digit_display(seconds_left, true);
   }
 
   //show_ip_digit_display();
