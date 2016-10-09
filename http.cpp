@@ -7,8 +7,6 @@
 #define FAILED_REQUEST_RATE  5000 // Újrapróbálkozás milisec idő ha eddig nem sikerült lekérdezni
 #define SUCCESS_REQUEST_RATE 60000 // Újrapróbálkozás milisec idő ha sikerült lekérdezni
 
-int offset = 0;
-
 char url_buffer[sizeof(settings.url_setting_part) + sizeof(settings.url_const_part) + sizeof(settings.url_user_part)];
 
 const char* parameter_rocket_set_selected = "?r=";
@@ -22,8 +20,9 @@ HttpServer httpServer;
 
 // called when the client request is complete
 static void http_client_got_response (uint8_t status, uint16_t off, uint16_t len) {
-static int counter = 0;
   
+  //static int counter = 0;
+  /*
   Serial.print(F("Got response, size with headers: "));
   Serial.print(counter);
   counter ++;
@@ -31,21 +30,17 @@ static int counter = 0;
   Serial.print(len);
   Serial.print(F(", "));
   Serial.println(off);
-  
+  */
 //  int data_len = sizeof(settings.launches);
 
   const char* response = ((char*)Ethernet::buffer) + off;
   
-  //Serial.write(response, len);
-  //Serial.write(Ethernet::buffer, 500);
-  
-  if (offset == 0) {
-    const char *response_without_header = strstr(response, "\r\n\r\n") + 4;
-    len -= (response_without_header - response);
-    response = response_without_header;
-  }
-  
   Serial.write(response, len);
+  
+  const char *response_without_header = strstr(response, "\r\n\r\n") + 4;
+  len -= (response_without_header - response);
+  response = response_without_header;
+  
 
 
   //if (len > (data_len - offset)) {
@@ -59,15 +54,13 @@ static int counter = 0;
   }
 
   for(int i=0; i<len; i++) {
-    settings.processApiResponse(i + offset, response[i]);
+    settings.processApiResponse(i, response[i]);
   }
   //memcpy(settings.launches + offset, response + 1, len);
   httpClient.info_downloaded_millis = millis();
 
   settings.loadLaunch(0);
-  Serial.println(settings.launch.rocket);
-  
-  offset += len;
+  //Serial.println(settings.launch.rocket);
   
   httpClient.next_try_millis = millis() + SUCCESS_REQUEST_RATE;
 }
@@ -76,12 +69,10 @@ void HttpClient::loop() {
   if (millis() > next_try_millis) {
     next_try_millis = millis() + FAILED_REQUEST_RATE;
     
-    offset = 0;
-
     strcpy(url_buffer, settings.url_setting_part);
     strcat(url_buffer, settings.url_const_part);
     strcat(url_buffer, settings.url_user_part);
-
+    
     Serial.print(F("Http client sending request to: "));
     Serial.println(url_buffer);
     

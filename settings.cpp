@@ -1,16 +1,16 @@
 #include "settings.h"
 #include <EEPROM.h>
 
-const uint16_t ROM_HEADER_ID = 0x23;
-const uint16_t ROM_HEADER_VERSION = 0x01;
+const int ROM_HEADER_ID = 0x23;
+const int ROM_HEADER_VERSION = 0x01;
 
-const uint16_t ROM_WEBSITE_START = 0x02;
-const uint16_t ROM_URL_SETTINGS_START = ROM_WEBSITE_START + sizeof(settings.website);
-const uint16_t ROM_URL_PART_START = ROM_URL_SETTINGS_START + sizeof(settings.url_setting_part);
-const uint16_t ROM_INTENSITY_START = ROM_URL_PART_START + sizeof(settings.url_user_part);
-const uint16_t ROM_SELECTED_MENU_START = ROM_INTENSITY_START + sizeof(settings.intensity);
+const int ROM_WEBSITE_START = 0x02;
+const int ROM_URL_SETTINGS_START = ROM_WEBSITE_START + sizeof(settings.website);
+const int ROM_URL_PART_START = ROM_URL_SETTINGS_START + sizeof(settings.url_setting_part);
+const int ROM_INTENSITY_START = ROM_URL_PART_START + sizeof(settings.url_user_part);
+const int ROM_SELECTED_MENU_START = ROM_INTENSITY_START + sizeof(settings.intensity);
 
-const uint16_t ROM_LAUNCHES = ROM_SELECTED_MENU_START + sizeof(settings.selected_menu);
+const int ROM_LAUNCHES = ROM_SELECTED_MENU_START + sizeof(settings.selected_menu);
 
 Settings settings;
 

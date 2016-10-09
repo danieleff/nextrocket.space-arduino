@@ -136,7 +136,7 @@ void show_seconds_left_digit_display(int32_t time, boolean onDigitDisplay) {
   }
   charDisplay1.print((days / 10) % 10);
   charDisplay1.print(days % 10);
-  charDisplay1.print(" days ");
+  charDisplay1.print(F(" days "));
 
   if (settings.launch.time_status == 'T') {
     charDisplay1.print(hours / 10);
@@ -189,16 +189,16 @@ void Displays::loop() {
     
     selected_current = 1; //TODO
     
-    /*
+    
     int32_t max = INT32_MAX;
     for(int i = 0; i < settings.launch_count; i++) {
       settings.loadLaunch(i);
-      if (max > settings.launch.seconds_left && settings.launch.seconds_left > 0) {
+      if (max > settings.launch.launch_time && settings.launch.launch_time > 0) {
         selected_current = i;
-        max = settings.launch.seconds_left;
+        max = settings.launch.launch_time;
       }
     }
-    */
+    
     
   } else if (settings.selected_menu == SELECTED_CYCLE) {
     selected_current = (millis() / SELECTED_CYCLE_DELAY_MILLIS) % settings.launch_count;
@@ -214,21 +214,16 @@ void Displays::loop() {
   settings.loadLaunch(settings.selected_launch);
 
   int32_t launch_time = atol(settings.launch.launch_time);
-  /*
-  Serial.print("Launch time: ");
-  Serial.print(launch_time);
+
   
-  Serial.print(", time_downloaded: ");
-  Serial.println(settings.time_downloaded);
-  */
   int32_t seconds_left = launch_time - settings.time_downloaded - (millis() - httpClient.info_downloaded_millis) / 1000;
 
   if (settings.selected_menu == SELECTED_CYCLE && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
-    write("CYCLE               ");
+    write(F("CYCLE               "));
     show_seconds_left_digit_display(seconds_left, false);
     
   } else if (settings.selected_menu == SELECTED_NEXT && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
-    write("UPCOMING            ");
+    write(F("UPCOMING            "));
     show_seconds_left_digit_display(seconds_left, false);
     
   } else if (

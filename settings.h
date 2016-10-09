@@ -35,7 +35,7 @@ class Settings {
     //Things to save
     char website[24] = "nextrocket.space";
     char url_setting_part[24] = "/";
-    char url_user_part[50] = "1a";
+    char url_user_part[10*3+1] = "1a";
     uint8_t intensity = 6;
     int8_t selected_menu = SELECTED_CYCLE;
 
