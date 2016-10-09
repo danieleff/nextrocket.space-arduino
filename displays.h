@@ -12,6 +12,8 @@ class Displays {
     void write(char* string);
     void write(const __FlashStringHelper *string);
     
+  private:
+    uint32_t lastUpdate;
 };
 
 extern Displays displays;

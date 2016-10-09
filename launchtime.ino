@@ -25,6 +25,8 @@ uint32_t button_menu_millis = 0; // when was the last button pressed
 
 boolean use_ethernet = true;
 
+Displays displays;
+
 void setup () {
   Serial.begin(115200);
   Serial.println(F("setup()"));

@@ -9,10 +9,22 @@ const int SELECTED_NEXT = -1;
 
 const byte MAX_LAUNCH_COUNT = 8;
 
+
 struct launch_type {
   int32_t seconds_left;
   char name[9];
 };
+
+/*
+struct launch_type {
+  char launch_status;
+  char time_status;
+  char launch_time[10 + 1];
+  char agency[20 + 1];
+  char rocket[20 + 1];
+  char payload[20 + 1];
+  char destination[10 + 1];
+};*/
 
 class Settings {
   

@@ -8,12 +8,15 @@
 
 
 #include <LiquidCrystal_I2C.h>
-LiquidCrystal_I2C charDisplay(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I2C address
+LiquidCrystal_I2C charDisplay1(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I2C address
+LiquidCrystal_I2C charDisplay2(0x26, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I2C address
 
 
 const uint32_t SELECTED_CYCLE_DELAY_MILLIS = 10000;
 const uint32_t MENU_BUTTON_SHOW_MENU_MILLIS = 1500;
 const uint32_t MENU_BUTTON_SHOW_NAME_MILLIS = 3000;
+
+const uint32_t DISPLAYS_REFRESH = 100;
 
 #ifdef ESP8266 
   //Pins with esp8266 wifi chip
@@ -37,12 +40,17 @@ DigitDisplay digitDisplay;
 
 
 void Displays::setup() {
+  lastUpdate = -DISPLAYS_REFRESH;
   
   digitDisplay.setup(PIN_DISPLAY_DIN, PIN_DISPLAY_LOAD, PIN_DISPLAY_CLK);
   
-  charDisplay.begin(16,2);
-  charDisplay.backlight();
-  charDisplay.clear();
+  charDisplay1.begin(16,2);
+  charDisplay1.backlight();
+  charDisplay1.clear();
+
+  charDisplay2.begin(20,4);
+  charDisplay2.backlight();
+  charDisplay2.clear();
 }
 
 char* intToString(int i, char* chr) {
@@ -110,22 +118,44 @@ void show_seconds_left_digit_display(int32_t time, boolean onDigitDisplay) {
     }
   }
 
-  charDisplay.setCursor(0,1);
-  charDisplay.print(days / 10);
-  charDisplay.print(days % 10);
-  charDisplay.print(" days ");
-  charDisplay.print(hours / 10);
-  charDisplay.print(hours % 10);
-  charDisplay.print(":");
-  charDisplay.print(minutes / 10);
-  charDisplay.print(minutes % 10);
-  charDisplay.print(":");
-  charDisplay.print(seconds / 10);
-  charDisplay.print(seconds % 10);
-  
+  charDisplay1.setCursor(0,1);
+  charDisplay1.print(days / 10);
+  charDisplay1.print(days % 10);
+  charDisplay1.print(" days ");
+  charDisplay1.print(hours / 10);
+  charDisplay1.print(hours % 10);
+  charDisplay1.print(":");
+  charDisplay1.print(minutes / 10);
+  charDisplay1.print(minutes % 10);
+  charDisplay1.print(":");
+  charDisplay1.print(seconds / 10);
+  charDisplay1.print(seconds % 10);
+
+
+  charDisplay2.setCursor(0,1);
+  charDisplay2.print(days / 10);
+  charDisplay2.print(days % 10);
+  charDisplay2.print(" days ");
+  charDisplay2.print(hours / 10);
+  charDisplay2.print(hours % 10);
+  charDisplay2.print(":");
+  charDisplay2.print(minutes / 10);
+  charDisplay2.print(minutes % 10);
+  charDisplay2.print(":");
+  charDisplay2.print(seconds / 10);
+  charDisplay2.print(seconds % 10);
 }
 
 void Displays::loop() {
+  if (millis() - lastUpdate < DISPLAYS_REFRESH) {
+    return;
+  }
+
+  lastUpdate = millis();
+
+  digitDisplay.reset();
+  
+  //digitDisplay.reset();
   int selected_current = -1;
   
   if (settings.selected_menu == SELECTED_NEXT) {
@@ -171,20 +201,33 @@ void Displays::loop() {
   }
 
   //show_ip_digit_display();
+
+
+  charDisplay2.setCursor(0,2);
+  charDisplay2.print("AAAA");
+
+  charDisplay2.setCursor(0,3);
+  charDisplay2.print("BBBB");
 }
 
 void Displays::write(char* string) {
   digitDisplay.write(string);
 
-  charDisplay.setCursor(0,0);
-  charDisplay.print(string);
+  charDisplay1.setCursor(0,0);
+  charDisplay1.print(string);
+  
+  charDisplay2.setCursor(0,0);
+  charDisplay2.print(string);
 }
 
 void Displays::write(const __FlashStringHelper *string) {
   digitDisplay.write(string);
 
-  charDisplay.setCursor(0,0);
-  charDisplay.print(string);
+  charDisplay1.setCursor(0,0);
+  charDisplay1.print(string);
+
+  charDisplay2.setCursor(0,0);
+  charDisplay2.print(string);
 }
 
 
