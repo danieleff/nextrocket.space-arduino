@@ -96,6 +96,8 @@ void process_buttons() {
       button_menu_millis = millis();
       selected_launch_changed_millis = millis();
       
+      displays.refresh();
+      
       settings.selected_menu++;
       if (settings.selected_menu >= settings.launch_count) {
         settings.selected_menu = SELECTED_CYCLE;

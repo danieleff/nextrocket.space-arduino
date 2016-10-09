@@ -16,7 +16,7 @@ const uint32_t SELECTED_CYCLE_DELAY_MILLIS = 10000;
 const uint32_t MENU_BUTTON_SHOW_MENU_MILLIS = 1500;
 const uint32_t MENU_BUTTON_SHOW_NAME_MILLIS = 3000;
 
-const uint32_t DISPLAYS_REFRESH = 100;
+const uint32_t DISPLAYS_REFRESH = 250;
 
 #ifdef ESP8266 
   //Pins with esp8266 wifi chip
@@ -94,56 +94,83 @@ void show_seconds_left_digit_display(int32_t time, boolean onDigitDisplay) {
     time = -time;
   }
   
-  long seconds = time % 60;
-  long minutes = (time / 60) % 60;
-  long hours = (time / 60 / 60) % 24;
-  long days = (time / 60 / 60 / 24);
+  uint32_t seconds = time % 60;
+  uint32_t minutes = (time / 60) % 60;
+  uint32_t hours = (time / 60 / 60) % 24;
+  uint32_t days = (time / 60 / 60 / 24);
 
   if (onDigitDisplay) {
-    digitDisplay.showDigit(0, seconds % 10, false);
-    digitDisplay.showDigit(1, seconds / 10, false);
-  
-    digitDisplay.showDigit(2, minutes % 10, true);
-    digitDisplay.showDigit(3, minutes / 10, false);
     
-    digitDisplay.showDigit(4, hours % 10, true);
-    digitDisplay.showDigit(5, hours / 10, false);
-  
-    digitDisplay.showDigit(6, days % 10, true);
+    if (settings.launch.time_status == 'T') {
+      digitDisplay.showDigit(0, seconds % 10, false);
+      digitDisplay.showDigit(1, seconds / 10, false);
     
-    if (negative) {
-      digitDisplay.showChar(7, '-', false);
+      digitDisplay.showDigit(2, minutes % 10, true);
+      digitDisplay.showDigit(3, minutes / 10, false);
+      
+      digitDisplay.showDigit(4, hours % 10, true);
+      digitDisplay.showDigit(5, hours / 10, false);
+
+      digitDisplay.showDigit(6, days % 10, true);
+      
+      if (negative) {
+        digitDisplay.showChar(7, '-', false);
+      } else {
+        digitDisplay.showDigit(7, days / 10, false);
+      }
     } else {
-      digitDisplay.showDigit(7, days / 10, false);
+      digitDisplay.write(F("    days"));
+
+      digitDisplay.showDigit(5, days % 10, true);
+    
+      digitDisplay.showDigit(6, (days / 10) % 10, false);
+      digitDisplay.showDigit(7, days / 100, false);
+      
     }
+    
   }
 
-  charDisplay1.setCursor(0,1);
-  charDisplay1.print(days / 10);
+  charDisplay1.setCursor(0, 1);
+  if (settings.launch.time_status != 'T') {
+    charDisplay1.print(days / 100);
+  }
+  charDisplay1.print((days / 10) % 10);
   charDisplay1.print(days % 10);
   charDisplay1.print(" days ");
-  charDisplay1.print(hours / 10);
-  charDisplay1.print(hours % 10);
-  charDisplay1.print(":");
-  charDisplay1.print(minutes / 10);
-  charDisplay1.print(minutes % 10);
-  charDisplay1.print(":");
-  charDisplay1.print(seconds / 10);
-  charDisplay1.print(seconds % 10);
 
+  if (settings.launch.time_status == 'T') {
+    charDisplay1.print(hours / 10);
+    charDisplay1.print(hours % 10);
+    charDisplay1.print(F(":"));
+    charDisplay1.print(minutes / 10);
+    charDisplay1.print(minutes % 10);
+    charDisplay1.print(F(":"));
+    charDisplay1.print(seconds / 10);
+    charDisplay1.print(seconds % 10);
+  } else {
+    charDisplay1.print(F("        "));
+  }
 
-  charDisplay2.setCursor(0,1);
-  charDisplay2.print(days / 10);
+  charDisplay2.setCursor(0, 1);
+  if (settings.launch.time_status != 'T') {
+    charDisplay2.print(days / 100);
+  }
+  charDisplay2.print((days / 10) % 10);
   charDisplay2.print(days % 10);
-  charDisplay2.print(" days ");
-  charDisplay2.print(hours / 10);
-  charDisplay2.print(hours % 10);
-  charDisplay2.print(":");
-  charDisplay2.print(minutes / 10);
-  charDisplay2.print(minutes % 10);
-  charDisplay2.print(":");
-  charDisplay2.print(seconds / 10);
-  charDisplay2.print(seconds % 10);
+  charDisplay2.print(F(" days "));
+
+  if (settings.launch.time_status == 'T') {
+    charDisplay2.print(hours / 10);
+    charDisplay2.print(hours % 10);
+    charDisplay2.print(F(":"));
+    charDisplay2.print(minutes / 10);
+    charDisplay2.print(minutes % 10);
+    charDisplay2.print(F(":"));
+    charDisplay2.print(seconds / 10);
+    charDisplay2.print(seconds % 10);
+  } else {
+    charDisplay2.print(F("        "));
+  }
 }
 
 void Displays::loop() {
@@ -159,13 +186,19 @@ void Displays::loop() {
   int selected_current = -1;
   
   if (settings.selected_menu == SELECTED_NEXT) {
+    
+    selected_current = 1; //TODO
+    
+    /*
     int32_t max = INT32_MAX;
     for(int i = 0; i < settings.launch_count; i++) {
-      if (max > settings.launches[i].seconds_left && settings.launches[i].seconds_left > 0) {
+      settings.loadLaunch(i);
+      if (max > settings.launch.seconds_left && settings.launch.seconds_left > 0) {
         selected_current = i;
-        max = settings.launches[i].seconds_left;
+        max = settings.launch.seconds_left;
       }
     }
+    */
     
   } else if (settings.selected_menu == SELECTED_CYCLE) {
     selected_current = (millis() / SELECTED_CYCLE_DELAY_MILLIS) % settings.launch_count;
@@ -178,21 +211,31 @@ void Displays::loop() {
     selected_launch_changed_millis = millis();
   }
   
-  int32_t seconds_left = settings.launches[settings.selected_launch].seconds_left - (millis() - httpClient.info_downloaded_millis) / 1000;
+  settings.loadLaunch(settings.selected_launch);
+
+  int32_t launch_time = atol(settings.launch.launch_time);
+  /*
+  Serial.print("Launch time: ");
+  Serial.print(launch_time);
+  
+  Serial.print(", time_downloaded: ");
+  Serial.println(settings.time_downloaded);
+  */
+  int32_t seconds_left = launch_time - settings.time_downloaded - (millis() - httpClient.info_downloaded_millis) / 1000;
 
   if (settings.selected_menu == SELECTED_CYCLE && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
-    write("ALL     ");
+    write("CYCLE               ");
     show_seconds_left_digit_display(seconds_left, false);
     
   } else if (settings.selected_menu == SELECTED_NEXT && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
-    write("NEXT    ");
+    write("UPCOMING            ");
     show_seconds_left_digit_display(seconds_left, false);
     
   } else if (
-        settings.launches[settings.selected_launch].seconds_left == 0
+        settings.launch.launch_time == 0
         || seconds_left % 60 == 59 
         || (millis() - selected_launch_changed_millis) < MENU_BUTTON_SHOW_NAME_MILLIS) {
-    write(settings.launches[settings.selected_launch].name);
+    write(settings.launch.rocket);
     
     show_seconds_left_digit_display(seconds_left, false);
   } else {
@@ -204,10 +247,10 @@ void Displays::loop() {
 
 
   charDisplay2.setCursor(0,2);
-  charDisplay2.print("AAAA");
+  charDisplay2.print(settings.launch.destination);
 
   charDisplay2.setCursor(0,3);
-  charDisplay2.print("BBBB");
+  charDisplay2.print(settings.launch.payload);
 }
 
 void Displays::write(char* string) {
@@ -229,5 +272,10 @@ void Displays::write(const __FlashStringHelper *string) {
   charDisplay2.setCursor(0,0);
   charDisplay2.print(string);
 }
+
+void Displays::refresh() {
+  lastUpdate = 0;
+}
+
 
 

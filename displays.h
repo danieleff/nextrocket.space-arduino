@@ -11,6 +11,7 @@ class Displays {
     void loop();
     void write(char* string);
     void write(const __FlashStringHelper *string);
+    void refresh();
     
   private:
     uint32_t lastUpdate;

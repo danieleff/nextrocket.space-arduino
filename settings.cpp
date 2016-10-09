@@ -1,14 +1,16 @@
 #include "settings.h"
 #include <EEPROM.h>
 
-const byte ROM_HEADER_ID = 0x23;
-const byte ROM_HEADER_VERSION = 0x01;
+const uint16_t ROM_HEADER_ID = 0x23;
+const uint16_t ROM_HEADER_VERSION = 0x01;
 
-const byte ROM_WEBSITE_START = 0x02;
-const byte ROM_URL_SETTINGS_START = ROM_WEBSITE_START + sizeof(settings.website);
-const byte ROM_URL_PART_START = ROM_URL_SETTINGS_START + sizeof(settings.url_setting_part);
-const byte ROM_INTENSITY_START = ROM_URL_PART_START + sizeof(settings.url_user_part);
-const byte ROM_SELECTED_MENU_START = ROM_INTENSITY_START + sizeof(settings.intensity);
+const uint16_t ROM_WEBSITE_START = 0x02;
+const uint16_t ROM_URL_SETTINGS_START = ROM_WEBSITE_START + sizeof(settings.website);
+const uint16_t ROM_URL_PART_START = ROM_URL_SETTINGS_START + sizeof(settings.url_setting_part);
+const uint16_t ROM_INTENSITY_START = ROM_URL_PART_START + sizeof(settings.url_user_part);
+const uint16_t ROM_SELECTED_MENU_START = ROM_INTENSITY_START + sizeof(settings.intensity);
+
+const uint16_t ROM_LAUNCHES = ROM_SELECTED_MENU_START + sizeof(settings.selected_menu);
 
 Settings settings;
 
@@ -47,6 +49,40 @@ void Settings::saveToEEPROM() {
     EEPROM.update(1, ROM_HEADER_VERSION);
   #endif
   
+}
+
+void Settings::processApiResponse(int index, uint8_t data) {
+  static char buf[10 + 1 + 3 + 1 + 1];
+  if (index < sizeof(buf) - 1) {
+    buf[index] = data;
+    if (index == 10) {
+      time_downloaded = atol(buf);
+    } else if (index == 10 + 4) {
+      launch_count = atol(buf + 11);
+    }
+    
+  } else {
+    setLaunchByte(index - sizeof(buf) + 1, data);
+  }
+}
+
+void Settings::setLaunchByte(int index, uint8_t data) {
+  
+    if (data == '\n') {
+      data = 0;
+    }
+
+    EEPROM.update(ROM_LAUNCHES + index, data);
+    
+    //((uint8_t*)(&launches))[index] = data;
+}
+
+void Settings::loadLaunch(int index) {
+  for(int i = 0; i < sizeof(launch); i++) {
+    ((uint8_t*)(&launch))[i] = EEPROM.read(ROM_LAUNCHES + i + index * sizeof(launch));
+  }
+    
+  //launch = launches[index];
 }
 
 

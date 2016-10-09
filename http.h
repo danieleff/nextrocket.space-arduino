@@ -7,7 +7,9 @@ class HttpClient {
   public:
     HttpClient(): next_try_millis(0), info_downloaded_millis(0) {};
     void loop();
+    
     uint32_t info_downloaded_millis;
+    
     uint32_t next_try_millis;
     
 };

@@ -22,36 +22,50 @@ HttpServer httpServer;
 
 // called when the client request is complete
 static void http_client_got_response (uint8_t status, uint16_t off, uint16_t len) {
+static int counter = 0;
+  
   Serial.print(F("Got response, size with headers: "));
+  Serial.print(counter);
+  counter ++;
+  Serial.print(F(", "));
   Serial.print(len);
+  Serial.print(F(", "));
+  Serial.println(off);
   
-  int data_len = sizeof(settings.launches);
+//  int data_len = sizeof(settings.launches);
 
-  const char* response = (char*)Ethernet::buffer + off;
+  const char* response = ((char*)Ethernet::buffer) + off;
   
-  Serial.println(response);
+  //Serial.write(response, len);
+  //Serial.write(Ethernet::buffer, 500);
   
   if (offset == 0) {
     const char *response_without_header = strstr(response, "\r\n\r\n") + 4;
     len -= (response_without_header - response);
     response = response_without_header;
   }
+  
+  Serial.write(response, len);
 
-  Serial.print(F(", without headers: "));
-  Serial.println(len);
 
-  if (len > (data_len - offset)) {
-    len = data_len - offset;
-  }
+  //if (len > (data_len - offset)) {
+  //  len = data_len - offset;
+  //}
   
   settings.launch_count = response[0];
 
   if (settings.selected_menu > settings.launch_count) {
     settings.selected_menu = SELECTED_CYCLE;
   }
-  
-  memcpy(settings.launches + offset, response + 1, len);
+
+  for(int i=0; i<len; i++) {
+    settings.processApiResponse(i + offset, response[i]);
+  }
+  //memcpy(settings.launches + offset, response + 1, len);
   httpClient.info_downloaded_millis = millis();
+
+  settings.loadLaunch(0);
+  Serial.println(settings.launch.rocket);
   
   offset += len;
   
