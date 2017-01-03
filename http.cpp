@@ -2,8 +2,6 @@
 #include "ethernet.h"
 #include "settings.h"
 
-#include <EtherCard.h>
-
 #define FAILED_REQUEST_RATE  5000 // Újrapróbálkozás milisec idő ha eddig nem sikerült lekérdezni
 #define SUCCESS_REQUEST_RATE 60000 // Újrapróbálkozás milisec idő ha sikerült lekérdezni
 
