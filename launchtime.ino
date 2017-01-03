@@ -4,21 +4,8 @@
 #include "http.h"
 #include "settings.h"
 
-
-
-#ifdef ESP8266 
-  //Pins with esp8266 wifi chip
-  const byte PIN_BUTTON_INTENSITY = 5;
-  const byte PIN_BUTTON_MENU = 2;
-  const byte PIN_BUTTON_DEMO = 4;
-
-#else 
-  //Pins with arduino nano + ethernet
-  const byte PIN_BUTTON_INTENSITY = 8;
-  const byte PIN_BUTTON_MENU = 9;
-  const byte PIN_BUTTON_DEMO = 4;
-#endif
-
+#include "util.h"
+#include "config.h"
 
 uint32_t button_intensity_millis = 0; // when was the last button pressed
 uint32_t button_menu_millis = 0; // when was the last button pressed
