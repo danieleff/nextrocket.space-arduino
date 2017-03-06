@@ -3,11 +3,18 @@
 
 #include <Arduino.h>
 
+#include "config.h"
+
 const int SELECTED_IP = -3;
 const int SELECTED_CYCLE = -2;
 const int SELECTED_NEXT = -1;
 
-//const byte MAX_LAUNCH_COUNT = 3;
+
+const char TIME_STATUS_MONTH = 'M';
+const char TIME_STATUS_DAY = 'D';
+const char TIME_STATUS_TIME = 'T';
+
+
 
 /*
 struct launch_type {
@@ -25,6 +32,8 @@ struct launch_type {
   char payload[20 + 1];
   char destination[10 + 1];
 };
+
+const byte MAX_LAUNCH_COUNT = LAUNCH_RAM / sizeof(launch_type);
 
 class Settings {
   
@@ -55,6 +64,8 @@ class Settings {
 
   private:
     void setLaunchByte(int index, uint8_t data);
+
+    launch_type launches[MAX_LAUNCH_COUNT];
     
     /*
     //Thins not to save

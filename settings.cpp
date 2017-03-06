@@ -32,6 +32,9 @@ void Settings::loadFromEEPROM() {
 }
 
 void Settings::saveToEEPROM() {
+  
+  return;
+  
   #ifndef ESP8266
     for(int i = 0; i < sizeof(website); i++) {
       EEPROM.update(ROM_WEBSITE_START + i, website[i]);
@@ -71,18 +74,19 @@ void Settings::setLaunchByte(int index, uint8_t data) {
     if (data == '\n') {
       data = 0;
     }
-
+    /*
     EEPROM.update(ROM_LAUNCHES + index, data);
-    
-    //((uint8_t*)(&launches))[index] = data;
+    */
+    ((uint8_t*)(&launches))[index] = data;
 }
 
 void Settings::loadLaunch(int index) {
+  /*
   for(int i = 0; i < sizeof(launch); i++) {
     ((uint8_t*)(&launch))[i] = EEPROM.read(ROM_LAUNCHES + i + index * sizeof(launch));
   }
-    
-  //launch = launches[index];
+  */
+  launch = launches[index];
 }
 
 

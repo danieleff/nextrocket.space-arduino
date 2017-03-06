@@ -15,21 +15,33 @@ boolean use_ethernet = true;
 Displays displays;
 
 void setup () {
+  pinMode(PIN_ETHERNET_CS, OUTPUT);
+  digitalWrite(PIN_ETHERNET_CS, HIGH);
+
+  pinMode(PIN_GRAPHICS_CS, OUTPUT);
+  digitalWrite(PIN_GRAPHICS_CS, HIGH);
+
+  pinMode(PIN_TOUCH_CS, OUTPUT);
+  digitalWrite(PIN_TOUCH_CS, HIGH);
+  
   Serial.begin(115200);
-  Serial.println(F("setup()"));
 
   displays.setup();
   
+  Serial.println(F("setup()"));
+
+  pinMode(LED_BUILTIN, OUTPUT);
+  
   displays.write(F("SETUP   "));
   
-  settings.loadFromEEPROM();
+  //settings.loadFromEEPROM();
   
   pinMode(PIN_BUTTON_INTENSITY, INPUT_PULLUP);
   pinMode(PIN_BUTTON_MENU, INPUT_PULLUP);
   pinMode(PIN_BUTTON_DEMO, INPUT_PULLUP);
   
   if (digitalRead(PIN_BUTTON_DEMO) == LOW) {
-    use_ethernet = false;
+    //use_ethernet = false;
   }
 
   #ifdef ESP8266 
@@ -58,7 +70,7 @@ void loop () {
 
   //Serial.println("Test");
   //delay(500);
-  yield();
+  //blink();
 }
 
 //TODO put into displays.cpp

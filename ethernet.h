@@ -1,7 +1,7 @@
 #ifndef ETHERNET_H
 #define ETHERNET_H
 
-#include <EtherCard.h>
+#include <EtherCard_STM.h>
 
 class LaunchtimeEthernet {
   public:

@@ -1,8 +1,7 @@
 #include "ethernet.h"
 #include "settings.h"
 #include "displays.h"
-
-#define PIN_ETHERNET_CS 10
+#include "config.h"
 
 LaunchtimeEthernet net;
 

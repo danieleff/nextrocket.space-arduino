@@ -1,35 +1,32 @@
 #include "displays.h"
 #include "digit_display.h"
+#include "util.h"
 
 #include "ethernet.h"
 #include "wifi.h"
 #include "http.h"
 #include "settings.h"
 
+#include "config.h"
+
+#include "CompressedImage.h"
+#include "heatshrink/heatshrink_decoder.h"
+
+//#define USE_CHARDISPLAY
 
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C charDisplay1(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I2C address
 LiquidCrystal_I2C charDisplay2(0x26, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I2C address
+
+#include "ILI9341SPI.h"
+ILI9341SPI graphic(PIN_GRAPHICS_CS, PIN_GRAPHICS_DC, PIN_GRAPHICS_RESET);
 
 
 const uint32_t SELECTED_CYCLE_DELAY_MILLIS = 10000;
 const uint32_t MENU_BUTTON_SHOW_MENU_MILLIS = 1500;
 const uint32_t MENU_BUTTON_SHOW_NAME_MILLIS = 3000;
 
-const uint32_t DISPLAYS_REFRESH = 250;
-
-#ifdef ESP8266 
-  //Pins with esp8266 wifi chip
-  const byte PIN_DISPLAY_DIN = 16;
-  const byte PIN_DISPLAY_CLK = 14;
-  const byte PIN_DISPLAY_LOAD = 12;
-
-#else 
-  //Pins with arduino nano + ethernet
-  const byte PIN_DISPLAY_DIN = 7;
-  const byte PIN_DISPLAY_CLK = 6;
-  const byte PIN_DISPLAY_LOAD = 5;
-#endif
+const uint32_t DISPLAYS_REFRESH = 30;
 
 //TODO make nicer
 uint32_t selected_launch_changed_millis = 0;
@@ -38,19 +35,28 @@ extern uint32_t button_menu_millis;
 
 DigitDisplay digitDisplay;
 
+extern compressed_image_t spacex_small;
+heatshrink_decoder decoder;
 
 void Displays::setup() {
-  lastUpdate = -DISPLAYS_REFRESH;
   
-  digitDisplay.setup(PIN_DISPLAY_DIN, PIN_DISPLAY_LOAD, PIN_DISPLAY_CLK);
-  
+  digitDisplay.setup(PIN_8_SEGMENT_DIN, PIN_8_SEGMENT_LOAD, PIN_8_SEGMENT_CLK);
+
+#ifdef USE_CHARDISPLAY
   charDisplay1.begin(16,2);
   charDisplay1.backlight();
   charDisplay1.clear();
-
+  
   charDisplay2.begin(20,4);
   charDisplay2.backlight();
   charDisplay2.clear();
+#endif
+  
+  graphic.begin();
+  graphic.setRotation(1);
+  graphic.fillScreen(BLACK);
+  graphic.setTextColor(WHITE);
+  graphic.setTextSize(1);
 }
 
 char* intToString(int i, char* chr) {
@@ -130,53 +136,94 @@ void show_seconds_left_digit_display(int32_t time, boolean onDigitDisplay) {
     
   }
 
+  char buf[16 + 1] = {0};
+  
+  if (settings.launch.time_status == TIME_STATUS_TIME) {
+      sprintf(buf, "%2d days %02d:%02d:%02d", days, hours, minutes, seconds);
+  } else if (settings.launch.time_status == TIME_STATUS_DAY) {
+      sprintf(buf, "%2d days", days);
+  } else if (settings.launch.time_status == TIME_STATUS_MONTH) {
+      sprintf(buf, "%2d days", days); //TODO months
+  }
+
+  graphic.setCursor(10, 66);
+  graphic.setTextSize(3);
+  graphic.print(buf);
+#ifdef USE_CHARDISPLAY
   charDisplay1.setCursor(0, 1);
-  if (settings.launch.time_status != 'T') {
-    charDisplay1.print(days / 100);
-  }
-  charDisplay1.print((days / 10) % 10);
-  charDisplay1.print(days % 10);
-  charDisplay1.print(F(" days "));
-
-  if (settings.launch.time_status == 'T') {
-    charDisplay1.print(hours / 10);
-    charDisplay1.print(hours % 10);
-    charDisplay1.print(F(":"));
-    charDisplay1.print(minutes / 10);
-    charDisplay1.print(minutes % 10);
-    charDisplay1.print(F(":"));
-    charDisplay1.print(seconds / 10);
-    charDisplay1.print(seconds % 10);
-  } else {
-    charDisplay1.print(F("        "));
-  }
-
+  charDisplay1.print(buf);
+  
   charDisplay2.setCursor(0, 1);
-  if (settings.launch.time_status != 'T') {
-    charDisplay2.print(days / 100);
-  }
-  charDisplay2.print((days / 10) % 10);
-  charDisplay2.print(days % 10);
-  charDisplay2.print(F(" days "));
+  charDisplay2.print(buf);
+#endif
 
-  if (settings.launch.time_status == 'T') {
-    charDisplay2.print(hours / 10);
-    charDisplay2.print(hours % 10);
-    charDisplay2.print(F(":"));
-    charDisplay2.print(minutes / 10);
-    charDisplay2.print(minutes % 10);
-    charDisplay2.print(F(":"));
-    charDisplay2.print(seconds / 10);
-    charDisplay2.print(seconds % 10);
-  } else {
-    charDisplay2.print(F("        "));
+
+
+  size_t input_size;
+  size_t output_size;
+  heatshrink_decoder_reset(&decoder);
+  uint8_t *data = spacex_small.compressed_data;
+  size_t size = spacex_small.compressed_data_size;
+  unsigned long start = micros();
+  graphic.protocol.beginTransaction();
+  graphic.protocol.setAddrWindow(20+0, 120, 20+spacex_small.width - 1, 120 + spacex_small.height - 1);
+  graphic.protocol.startBuffer();
+  decoder.input_buffer = data;
+  decoder.input_size = size;
+
+  size -= input_size;
+  data += input_size;
+  
+  HSD_poll_res poll_res;
+  
+  do {
+    uint8_t buf[64];
+    poll_res = heatshrink_decoder_poll(&decoder, buf, sizeof(buf), &output_size);
+    for(int i=0; i<output_size; i++) {
+      graphic.protocol.addToBuffer(Color(spacex_small.palette_data[buf[i] * 3], spacex_small.palette_data[buf[i] * 3 + 1], spacex_small.palette_data[buf[i] * 3 + 2]));
+    }
+  } while(poll_res == HSDR_POLL_MORE);
+    
+  graphic.protocol.sendBuffer();
+  graphic.protocol.endTransaction();
+  
+  
+}
+
+void fillLine(int x, int y, int w, int h, int glow) {
+  graphic.protocol.setAddrWindow(x, y, x + w - 1, y + h - 1);
+  graphic.protocol.startBuffer();
+  for(int i = 0; i < w + h - 1; i++) {
+    Color c(0, 0, 255);
+    int d = i - glow + 255;
+    
+    if (d > 0 && d < 200) {
+      c = Color(d, d, 255);
+    }
+    graphic.protocol.addToBuffer(c);
   }
+  graphic.protocol.sendBuffer();
+}
+
+void drawFrame(int x, int y, int w, int h) {
+  int glow = (millis() / 5) % 1000;
+
+  graphic.protocol.beginTransaction();
+  
+  fillLine(x, y, w, 1, glow);
+  fillLine(x, y, 1, h, glow);
+  fillLine(x, y + h, w, 1, glow - h);
+  fillLine(x + w, y, 1, h, glow - w);
+  
+  graphic.protocol.endTransaction();
+  
+  //graphic.drawLine(x, y, x + w, y + h, millis());
 }
 
 void Displays::loop() {
-  if (millis() - lastUpdate < DISPLAYS_REFRESH) {
-    return;
-  }
+  RETURN_BEFORE_MILLIS(DISPLAYS_REFRESH);
+
+  drawFrame(8, 50, 300, 50);
 
   lastUpdate = millis();
 
@@ -193,10 +240,10 @@ void Displays::loop() {
     int32_t max = INT32_MAX;
     for(int i = 0; i < settings.launch_count; i++) {
       settings.loadLaunch(i);
-      if (max > settings.launch.launch_time && settings.launch.launch_time > 0) {
+      /*if (max > settings.launch.launch_time && settings.launch.launch_time > 0) {
         selected_current = i;
         max = settings.launch.launch_time;
-      }
+      }*/
     }
     
     
@@ -240,32 +287,33 @@ void Displays::loop() {
 
   //show_ip_digit_display();
 
-
+#ifdef USE_CHARDISPLAY
   charDisplay2.setCursor(0,2);
   charDisplay2.print(settings.launch.destination);
 
   charDisplay2.setCursor(0,3);
   charDisplay2.print(settings.launch.payload);
+#endif
 }
 
 void Displays::write(char* string) {
   digitDisplay.write(string);
 
+#ifdef USE_CHARDISPLAY
   charDisplay1.setCursor(0,0);
   charDisplay1.print(string);
   
   charDisplay2.setCursor(0,0);
   charDisplay2.print(string);
+#endif
+
+  graphic.setTextSize(1);
+  graphic.setCursor(0, 0);
+  graphic.print(string);
 }
 
 void Displays::write(const __FlashStringHelper *string) {
-  digitDisplay.write(string);
-
-  charDisplay1.setCursor(0,0);
-  charDisplay1.print(string);
-
-  charDisplay2.setCursor(0,0);
-  charDisplay2.print(string);
+  write((char*)string);
 }
 
 void Displays::refresh() {
