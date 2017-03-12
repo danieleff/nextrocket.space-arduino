@@ -51,12 +51,15 @@ void Displays::setup() {
   charDisplay2.backlight();
   charDisplay2.clear();
 #endif
-  
+
+#if USE_GRAPH_DISPLAY
   graphic.begin();
   graphic.setRotation(1);
   graphic.fillScreen(BLACK);
   graphic.setTextColor(WHITE);
   graphic.setTextSize(1);
+#endif
+
 }
 
 char* intToString(int i, char* chr) {
@@ -158,7 +161,7 @@ void show_seconds_left_digit_display(int32_t time, boolean onDigitDisplay) {
 #endif
 
 
-
+#if USE_GRAPH_DISPLAY
   size_t input_size;
   size_t output_size;
   heatshrink_decoder_reset(&decoder);
@@ -186,7 +189,7 @@ void show_seconds_left_digit_display(int32_t time, boolean onDigitDisplay) {
     
   graphic.protocol.sendBuffer();
   graphic.protocol.endTransaction();
-  
+#endif
   
 }
 

@@ -1,14 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define USE_8_SEGMENT_DISPLAY true
-#define USE_2_LINE_CHAR_DISPLAY false
-#define USE_4_LINE_CHAR_DISPLAY false
-#define USE_GRAPH_DISPLAY true
-
-#define USE_ETHERNET true
-#define RUNNING_ON_WIFI_ESP8266 false
-
 #ifdef ESP8266
   
   #error "untested"
@@ -20,6 +12,16 @@
   const byte PIN_BUTTON_DEMO = 4;
   
 #elif defined(STM32)
+
+#define USE_8_SEGMENT_DISPLAY true
+#define USE_2_LINE_CHAR_DISPLAY false
+#define USE_4_LINE_CHAR_DISPLAY false
+#define USE_GRAPH_DISPLAY true
+
+#define USE_ETHERNET true
+#define RUNNING_ON_WIFI_ESP8266 false
+
+  const int ETHERNET_BUFFER_SIZE = 700;
 
   const int LAUNCH_RAM = 1024 * 4;
   
@@ -41,7 +43,17 @@
   
 #elif defined(ARDUINO_AVR_NANO)
 
-  const int LAUNCH_RAM = 512;
+#define USE_8_SEGMENT_DISPLAY true
+#define USE_2_LINE_CHAR_DISPLAY false
+#define USE_4_LINE_CHAR_DISPLAY false
+#define USE_GRAPH_DISPLAY false
+
+#define USE_ETHERNET true
+#define RUNNING_ON_WIFI_ESP8266 false
+
+  const int ETHERNET_BUFFER_SIZE = 400;
+
+  const int LAUNCH_RAM = 120;
 
   const byte PIN_BUTTON_INTENSITY = 2;
   const byte PIN_BUTTON_MENU = 3;

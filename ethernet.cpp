@@ -8,7 +8,7 @@ LaunchtimeEthernet net;
 // ethernet interface mac address
 static byte mymac[] = { 0x74,0x61,0x62,0x2D,0x30,0x31 };
 
-byte Ethernet::buffer[700];
+byte Ethernet::buffer[ETHERNET_BUFFER_SIZE];
 
 extern uint32_t info_downloaded_millis;
 
