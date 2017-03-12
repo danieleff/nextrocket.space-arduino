@@ -74,7 +74,7 @@ void HttpClient::loop() {
     Serial.print(F("Http client sending request to: "));
     Serial.println(url_buffer);
     
-    ether.browseUrl(PSTR(""), url_buffer, settings.website, http_client_got_response);
+    ether.browseUrl(PSTR(""), url_buffer, PSTR("nextrocket.space"), http_client_got_response);
   }
 }
 
