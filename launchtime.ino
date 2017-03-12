@@ -30,8 +30,6 @@ void setup () {
   
   Serial.println(F("setup()"));
 
-  pinMode(LED_BUILTIN, OUTPUT);
-  
   displays.write(F("SETUP   "));
   
   //settings.loadFromEEPROM();
