@@ -137,7 +137,8 @@ int set_selected_rockets(char* request, char* response) {
 
 int get_selected_rockets(char* request, char* response) {
   BufferFiller bfill = (uint8_t*) response;
-  bfill.emit_p(PSTR("HTTP/1.0 200 OK\r\n\r\n$S"), settings.url_user_part);
+  bfill.emit_p(PSTR("HTTP/1.0 200 OK\r\n\r\n"));
+  bfill.emit_raw(settings.url_user_part, strlen(settings.url_user_part));
   return bfill.position();
 }
 
