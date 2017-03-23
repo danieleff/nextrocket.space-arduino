@@ -30,7 +30,7 @@ void setup () {
   
   Serial.println(F("setup()"));
 
-  displays.write(F("SETUP   "));
+  displays.setMessage(F("SETUP   "));
   
   //settings.loadFromEEPROM();
   
@@ -71,19 +71,18 @@ void loop () {
   //blink();
 }
 
-//TODO put into displays.cpp
-#include "digit_display.h"
-extern DigitDisplay digitDisplay;
-
 void process_buttons() {
   
   if (millis() - button_intensity_millis> 200) {
     if (digitalRead(PIN_BUTTON_INTENSITY) == LOW) {
       button_intensity_millis = millis();
 
-      digitDisplay.reset();
+      //TODO intensity
+      //digitDisplay.shutdown(0, false);
+      //digitDisplay.clearDisplay(0);
+      
       settings.intensity += 4;
-      digitDisplay.setIntensity(settings.intensity);
+      //digitDisplay.setIntensity(0, settings.intensity);
     }
   }
 

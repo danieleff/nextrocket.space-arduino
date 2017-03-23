@@ -14,15 +14,15 @@ extern uint32_t info_downloaded_millis;
 
 void loop_error(const __FlashStringHelper *error) {
   while(1) {
-    displays.write(error);
+    displays.setMessage(error);
     delay(800);
-    displays.write(F("        "));
+    displays.setMessage(F("        "));
     delay(200);
   }
 }
 
 void LaunchtimeEthernet::setup() {
-  displays.write(F("NET BOOT"));
+  displays.setMessage(F("NET BOOT"));
   
   Serial.println(F("Starting up ethernet"));
   if (ether.begin(sizeof Ethernet::buffer, mymac, PIN_ETHERNET_CS) == 0) {
@@ -32,7 +32,7 @@ void LaunchtimeEthernet::setup() {
   }
 
 
-  displays.write(F("GET DHCP"));
+  displays.setMessage(F("GET DHCP"));
   Serial.println(F("Get DHCP"));
   if (!ether.dhcpSetup()) {
       Serial.println(F("DHCP failed"));
@@ -44,7 +44,7 @@ void LaunchtimeEthernet::setup() {
   ether.printIp(F("GW IP: "), ether.gwip);
   ether.printIp(F("DNS IP: "), ether.dnsip);
 
-  displays.write(F("GET DNS"));
+  displays.setMessage(F("GET DNS"));
   Serial.println(F("Get DNS"));
   if (!ether.dnsLookup(settings.website, true)) {
       Serial.println(F("DNS failed"));
