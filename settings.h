@@ -42,9 +42,9 @@ class Settings {
     void saveToEEPROM();
 
     //Things to save
-    char url_user_part[10*3+1] = "1a";
+    char url_user_part[60] = "1a";
     uint8_t intensity = 6;
-    int8_t selected_menu = SELECTED_CYCLE;
+    int32_t selected_menu = SELECTED_CYCLE;
 
     //Things not to save
     uint8_t launch_count = 1;

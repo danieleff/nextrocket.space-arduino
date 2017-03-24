@@ -17,6 +17,7 @@
 #define USE_2_LINE_CHAR_DISPLAY false
 #define USE_4_LINE_CHAR_DISPLAY false
 #define USE_GRAPH_DISPLAY true
+#define USE_EEPROM false
 
 #define USE_ETHERNET true
 #define RUNNING_ON_WIFI_ESP8266 false
@@ -27,7 +28,6 @@
   
   const byte PIN_BUTTON_INTENSITY = 17;
   const byte PIN_BUTTON_MENU = 18;
-  const byte PIN_BUTTON_DEMO = 19;
   
   const byte PIN_8_SEGMENT_DIN = 15;
   const byte PIN_8_SEGMENT_LOAD = 16;
@@ -47,6 +47,7 @@
 #define USE_2_LINE_CHAR_DISPLAY false
 #define USE_4_LINE_CHAR_DISPLAY false
 #define USE_GRAPH_DISPLAY false
+#define USE_EEPROM true
 
 #define USE_ETHERNET true
 #define RUNNING_ON_WIFI_ESP8266 false
@@ -57,7 +58,6 @@
 
   const byte PIN_BUTTON_INTENSITY = 2;
   const byte PIN_BUTTON_MENU = 3;
-  const byte PIN_BUTTON_DEMO = 4;
   
   const byte PIN_8_SEGMENT_DIN = 8;
   const byte PIN_8_SEGMENT_LOAD = 7;

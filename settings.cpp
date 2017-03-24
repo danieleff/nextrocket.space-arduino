@@ -13,26 +13,35 @@ const int ROM_LAUNCHES = ROM_SELECTED_MENU_START + sizeof(settings.selected_menu
 Settings settings;
 
 void Settings::loadFromEEPROM() {
+  
+  #ifdef USE_EEPROM
   if (EEPROM.read(0) == ROM_HEADER_ID && EEPROM.read(1) == ROM_HEADER_VERSION) {
     for(int i = 0; i < sizeof(url_user_part); i++) {
       url_user_part[i] = EEPROM.read(ROM_URL_PART_START + i);
     }
     intensity = EEPROM.read(ROM_INTENSITY_START);
     selected_menu = EEPROM.read(ROM_SELECTED_MENU_START);
-    
+    selected_menu |= EEPROM.read(ROM_SELECTED_MENU_START + 1) << 8;
+    selected_menu |= EEPROM.read(ROM_SELECTED_MENU_START + 2) << 16;
+    selected_menu |= EEPROM.read(ROM_SELECTED_MENU_START + 3) << 24;
   }
+  #endif
+  
 }
 
 void Settings::saveToEEPROM() {
   
-  return;
-  
-  #ifndef ESP8266
+  #ifdef USE_EEPROM
+    EEPROM.update(0, 0);
+    
     for(int i = 0; i < sizeof(url_user_part); i++) {
       EEPROM.update(ROM_URL_PART_START + i, url_user_part[i]);
     }
     EEPROM.update(ROM_INTENSITY_START, intensity);
-    EEPROM.update(ROM_SELECTED_MENU_START, selected_menu);
+    EEPROM.update(ROM_SELECTED_MENU_START, selected_menu & 0xFF);
+    EEPROM.update(ROM_SELECTED_MENU_START + 1, (selected_menu >> 8) & 0xFF);
+    EEPROM.update(ROM_SELECTED_MENU_START + 2, (selected_menu >> 16) & 0xFF);
+    EEPROM.update(ROM_SELECTED_MENU_START + 3, (selected_menu >> 24) & 0xFF);
     
     EEPROM.update(0, ROM_HEADER_ID);
     EEPROM.update(1, ROM_HEADER_VERSION);

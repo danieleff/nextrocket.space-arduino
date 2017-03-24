@@ -5,8 +5,6 @@
 #define FAILED_REQUEST_RATE  5000 // Újrapróbálkozás milisec idő ha eddig nem sikerült lekérdezni
 #define SUCCESS_REQUEST_RATE 60000 // Újrapróbálkozás milisec idő ha sikerült lekérdezni
 
-//char url_buffer[sizeof(settings.url_setting_part) + sizeof(settings.url_const_part) + sizeof(settings.url_user_part)];
-
 const char* parameter_rocket_set_selected = "?r=";
 
 const char* parameter_rocket_get_selected = "/get_selected";
