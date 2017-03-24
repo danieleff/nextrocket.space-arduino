@@ -46,7 +46,7 @@ void LaunchtimeEthernet::setup() {
 
   displays.setMessage(F("GET DNS"));
   Serial.println(F("Get DNS"));
-  if (!ether.dnsLookup(settings.website, true)) {
+  if (!ether.dnsLookup(PSTR("nextrocket.space"))) {
       Serial.println(F("DNS failed"));
       
       loop_error(F("DNS ERR "));

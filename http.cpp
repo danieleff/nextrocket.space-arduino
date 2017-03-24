@@ -5,7 +5,7 @@
 #define FAILED_REQUEST_RATE  5000 // Újrapróbálkozás milisec idő ha eddig nem sikerült lekérdezni
 #define SUCCESS_REQUEST_RATE 60000 // Újrapróbálkozás milisec idő ha sikerült lekérdezni
 
-char url_buffer[sizeof(settings.url_setting_part) + sizeof(settings.url_const_part) + sizeof(settings.url_user_part)];
+//char url_buffer[sizeof(settings.url_setting_part) + sizeof(settings.url_const_part) + sizeof(settings.url_user_part)];
 
 const char* parameter_rocket_set_selected = "?r=";
 
@@ -67,14 +67,10 @@ void HttpClient::loop() {
   if (millis() > next_try_millis) {
     next_try_millis = millis() + FAILED_REQUEST_RATE;
     
-    strcpy(url_buffer, settings.url_setting_part);
-    strcat(url_buffer, settings.url_const_part);
-    strcat(url_buffer, settings.url_user_part);
-    
     Serial.print(F("Http client sending request to: "));
-    Serial.println(url_buffer);
+    Serial.println(settings.url_user_part);
     
-    ether.browseUrl(PSTR(""), url_buffer, PSTR("nextrocket.space"), http_client_got_response);
+    ether.browseUrl(PSTR("/api.php?v=2&q="), settings.url_user_part, PSTR("nextrocket.space"), http_client_got_response);
   }
 }
 
@@ -85,20 +81,14 @@ void HttpClient::loop() {
 int main_page(char* request, char* response) {
   BufferFiller bfill = (uint8_t*)response;
 
-  char buffer1[sizeof(settings.website)];
-  char buffer2[sizeof(settings.url_setting_part)];
-  
-  strcpy(buffer1, settings.website);
-  strcpy(buffer2, settings.url_setting_part);
-  
   bfill.emit_p(PSTR("HTTP/1.0 200 OK\r\n"
       "Content-Type: text/html\r\n"
       "\r\n"
       "<!DOCTYPE html>"
       "<html><head><meta charset=\"utf-8\">"
-      "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://$S$Scss/style.css\">"
-      "<script src=\"http://$S$Sscript.js\"></script>"
-      "<script src=\"http://$S$Sjs/jquery.min.js\"></script>"
+      "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://nextrocket.space/css/style.css\">"
+      "<script src=\"http://nextrocket.space/script.js\"></script>"
+      "<script src=\"http://nextrocket.space/js/jquery.min.js\"></script>"
       "</head>"
       "<body>"
       "<h1>nextrocket.space</h1>"
@@ -106,7 +96,7 @@ int main_page(char* request, char* response) {
       "<script type='text/javascript'>init_embedded();</script>"
       "</body>"
       "</html>"
-      ), buffer1, buffer2, buffer1, buffer2, buffer1, buffer2);
+      ));
   
   return bfill.position();
 }

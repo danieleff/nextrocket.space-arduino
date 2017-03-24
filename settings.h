@@ -42,8 +42,6 @@ class Settings {
     void saveToEEPROM();
 
     //Things to save
-    char website[24] = "nextrocket.space";
-    char url_setting_part[24] = "/";
     char url_user_part[10*3+1] = "1a";
     uint8_t intensity = 6;
     int8_t selected_menu = SELECTED_CYCLE;
@@ -57,8 +55,6 @@ class Settings {
     
     uint8_t selected_launch = 0; //selected launch index
     
-    char* url_const_part = "api.php?v=2&q=";
-
     uint32_t time_downloaded;
 
 
