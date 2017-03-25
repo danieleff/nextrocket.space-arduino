@@ -132,5 +132,13 @@ void Displays::refresh() {
   
 }
 
+void Displays::showIP(bool show) {
+  if (this->show_ip == show) {
+    return;
+  }
+  
+  this->show_ip = show;
+  rocket7SegmentDisplay.showIP(show);
+}
 
 

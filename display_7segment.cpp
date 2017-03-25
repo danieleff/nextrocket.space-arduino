@@ -1,5 +1,6 @@
 #include "displays.h"
 #include "settings.h"
+#include "ethernet.h"
 #include "http.h"
 
 const static byte charTo7Segment [] PROGMEM  = { 
@@ -21,6 +22,8 @@ const static byte charTo7Segment [] PROGMEM  = {
     B00110111,B00111011,B01101101,B00000000,B00000000,B00000000,B00000000,B00000000 // 120 xyz{|}~ 
 }; 
 
+extern uint32_t selected_launch_changed_millis;
+
 void Rocket7SegmentDisplay::setup() {
   ledControl.shutdown(0, false);
   ledControl.setIntensity(0, 7);
@@ -28,12 +31,24 @@ void Rocket7SegmentDisplay::setup() {
 }
 
 void Rocket7SegmentDisplay::loop() {
-  if (!show_launch) {
+  if (show_ip) {
+    char buf[13];
+    sprintf(buf, "%d.%d.%d.%d", ether.myip[0], ether.myip[1], ether.myip[2], ether.myip[3]);
+    int max_offset = strlen(buf) - 7;
+    int offset = (millis() / 1000) % max_offset;
+    write(buf + offset);
+    
+  } else if (!show_launch) {
     
     write(data);
     
   } else {
     
+    if ((millis() - selected_launch_changed_millis) < 2000) {
+      write(data);
+      return;
+    }
+
     int32_t time = launch_at_seconds - settings.time_downloaded - (millis() - httpClient.info_downloaded_millis) / 1000;
     boolean negative = false;
     if (time < 0) {
@@ -45,6 +60,11 @@ void Rocket7SegmentDisplay::loop() {
     uint32_t minutes = (time / 60) % 60;
     uint32_t hours = (time / 60 / 60) % 24;
     uint32_t days = (time / 60 / 60 / 24);
+
+    if (seconds == 59) {
+      write(data);
+      return;
+    }
     
     if (settings.launch.time_status == 'T') {
       ledControl.setDigit(0, 0, seconds % 10, false);
@@ -119,4 +139,13 @@ void Rocket7SegmentDisplay::write(char* message8Chars) {
   }
   
 }
+
+
+void Rocket7SegmentDisplay::showIP(bool show) {
+  
+  this->show_ip = show;
+  
+  loop();
+}
+
 

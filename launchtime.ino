@@ -71,6 +71,8 @@ void loop () {
 }
 
 void process_buttons() {
+  boolean both_buttons_pressed = (digitalRead(PIN_BUTTON_INTENSITY) == LOW) && (digitalRead(PIN_BUTTON_MENU) == LOW);
+  displays.showIP(both_buttons_pressed);
   
   if (millis() - button_intensity_millis> 200) {
     if (digitalRead(PIN_BUTTON_INTENSITY) == LOW) {
