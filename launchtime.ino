@@ -12,6 +12,8 @@ uint32_t button_menu_millis = 0; // when was the last button pressed
 
 Displays displays;
 
+boolean reset_demo_mode = false;
+
 void setup () {
   pinMode(PIN_ETHERNET_CS, OUTPUT);
   digitalWrite(PIN_ETHERNET_CS, HIGH);
@@ -22,6 +24,9 @@ void setup () {
   pinMode(PIN_TOUCH_CS, OUTPUT);
   digitalWrite(PIN_TOUCH_CS, HIGH);
   
+  pinMode(PIN_BUTTON_INTENSITY, INPUT_PULLUP);
+  pinMode(PIN_BUTTON_MENU, INPUT_PULLUP);
+  
   Serial.begin(115200);
 
   displays.setup();
@@ -29,24 +34,29 @@ void setup () {
   Serial.println(F("setup()"));
 
   displays.setMessage(F("SETUP   "));
+
+  if (digitalRead(PIN_BUTTON_MENU) == LOW) {
+    reset_demo_mode = true;
+  }
   
-  settings.loadFromEEPROM();
-  
-  pinMode(PIN_BUTTON_INTENSITY, INPUT_PULLUP);
-  pinMode(PIN_BUTTON_MENU, INPUT_PULLUP);
-  
-  #ifdef ESP8266 
-    wifi.setup();
-  #endif
-  
-  if (USE_ETHERNET) {
-    net.setup();
+  if (!reset_demo_mode) {
+    settings.loadFromEEPROM();
+    
+    #ifdef ESP8266 
+      wifi.setup();
+    #endif
+    
+    if (USE_ETHERNET) {
+      net.setup();
+    }
+  } else {
+    // TODO set demo launch
   }
   
 }
 
 void loop () {
-  if (USE_ETHERNET) {
+  if (!reset_demo_mode && USE_ETHERNET) {
     httpServer.loop();
     httpClient.loop();
   }
@@ -58,10 +68,6 @@ void loop () {
   displays.loop();
 
   process_buttons();
-
-  //Serial.println("Test");
-  //delay(500);
-  //blink();
 }
 
 void process_buttons() {
