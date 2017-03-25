@@ -17,34 +17,20 @@ HttpServer httpServer;
 // called when the client request is complete
 static void http_client_got_response (uint8_t status, uint16_t off, uint16_t len) {
   
-  //static int counter = 0;
-  /*
-  Serial.print(F("Got response, size with headers: "));
-  Serial.print(counter);
-  counter ++;
-  Serial.print(F(", "));
-  Serial.print(len);
-  Serial.print(F(", "));
-  Serial.println(off);
-  */
-//  int data_len = sizeof(settings.launches);
-
   const char* response = ((char*)Ethernet::buffer) + off;
-  
+
   Serial.write(response, len);
+  Serial.println();
+  Serial.println(len);
   
   const char *response_without_header = strstr(response, "\r\n\r\n") + 4;
   len -= (response_without_header - response);
   response = response_without_header;
   
-
-
   //if (len > (data_len - offset)) {
   //  len = data_len - offset;
   //}
   
-  settings.launch_count = response[0];
-
   if (settings.selected_menu > settings.launch_count) {
     settings.selected_menu = SELECTED_CYCLE;
   }
@@ -52,6 +38,8 @@ static void http_client_got_response (uint8_t status, uint16_t off, uint16_t len
   for(int i=0; i<len; i++) {
     settings.processApiResponse(i, response[i]);
   }
+  Serial.println(settings.launch_count);
+
   //memcpy(settings.launches + offset, response + 1, len);
   httpClient.info_downloaded_millis = millis();
 
@@ -68,7 +56,7 @@ void HttpClient::loop() {
     Serial.print(F("Http client sending request to: "));
     Serial.println(settings.url_user_part);
     
-    ether.browseUrl(PSTR("/api.php?v=2&q="), settings.url_user_part, PSTR("nextrocket.space"), http_client_got_response);
+    ether.browseUrl(PSTR("/api.php?v=3&q="), settings.url_user_part, PSTR("nextrocket.space"), http_client_got_response);
   }
 }
 

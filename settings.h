@@ -24,16 +24,17 @@ struct launch_type {
 */
 
 struct launch_type {
+  char launch_id[6 + 1];
   char launch_status;
   char time_status;
   char launch_time[10 + 1];
-  char agency[20 + 1];
+  char agency[10 + 1];
   char rocket[20 + 1];
-  char payload[20 + 1];
-  char destination[10 + 1];
+  //char payload[20 + 1];
+  //char destination[10 + 1];
 };
 
-const byte MAX_LAUNCH_COUNT = LAUNCH_RAM / sizeof(launch_type);
+const uint8_t MAX_LAUNCH_COUNT = 5;
 
 class Settings {
   
@@ -42,7 +43,7 @@ class Settings {
     void saveToEEPROM();
 
     //Things to save
-    char url_user_part[60] = "1a";
+    char url_user_part[60] = "1|";
     uint8_t intensity = 6;
     int32_t selected_menu = SELECTED_CYCLE;
 

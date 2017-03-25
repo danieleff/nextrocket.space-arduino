@@ -24,8 +24,6 @@
 
   const int ETHERNET_BUFFER_SIZE = 700;
 
-  const int LAUNCH_RAM = 1024 * 4;
-  
   const byte PIN_BUTTON_INTENSITY = 17;
   const byte PIN_BUTTON_MENU = 18;
   
@@ -52,9 +50,7 @@
 #define USE_ETHERNET true
 #define RUNNING_ON_WIFI_ESP8266 false
 
-  const int ETHERNET_BUFFER_SIZE = 500;
-
-  const int LAUNCH_RAM = 400;
+  const int ETHERNET_BUFFER_SIZE = 600;
 
   const byte PIN_BUTTON_INTENSITY = 2;
   const byte PIN_BUTTON_MENU = 3;
