@@ -12,7 +12,7 @@ uint32_t button_menu_millis = 0; // when was the last button pressed
 
 Displays displays;
 
-boolean reset_demo_mode = false;
+boolean demo_mode = false;
 
 void setup () {
   pinMode(PIN_ETHERNET_CS, OUTPUT);
@@ -35,12 +35,15 @@ void setup () {
 
   displays.setMessage(F("SETUP   "));
 
-  if (digitalRead(PIN_BUTTON_MENU) == LOW) {
-    reset_demo_mode = true;
+  if (digitalRead(PIN_BUTTON_INTENSITY) == LOW) {
+    settings.loadFromEEPROM();
   }
   
-  if (!reset_demo_mode) {
-    settings.loadFromEEPROM();
+  if (digitalRead(PIN_BUTTON_MENU) == HIGH) {
+    demo_mode = true;
+  }
+
+  if (!demo_mode) {
     
     #ifdef ESP8266 
       wifi.setup();
@@ -56,7 +59,7 @@ void setup () {
 }
 
 void loop () {
-  if (!reset_demo_mode && USE_ETHERNET) {
+  if (!demo_mode && USE_ETHERNET) {
     httpServer.loop();
     httpClient.loop();
   }
