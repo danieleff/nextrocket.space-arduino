@@ -112,7 +112,7 @@ void process_buttons() {
         
       } else if (settings.selected_launch_id == SELECTED_NEXT) {
         
-        settings.selected_launch_id = settings.launches[0].launch_id;
+        settings.selected_launch_id = atoi(settings.launches[0].launch_id);
         
       } else {
         
@@ -121,7 +121,7 @@ void process_buttons() {
         if (index >= settings.launch_count) {
           settings.selected_launch_id = SELECTED_IP;
         } else {
-          settings.selected_launch_id = settings.launches[index].launch_id;
+          settings.selected_launch_id = atoi(settings.launches[index].launch_id);
         }
         
       }
