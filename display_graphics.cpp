@@ -1,11 +1,12 @@
 #include "displays.h"
 
+#if USE_GRAPH_DISPLAY
+
 #include "CompressedImage.h"
 #include "heatshrink/heatshrink_decoder.h"
 
 #include "ILI9341SPI.h"
 
-#if USE_GRAPH_DISPLAY
 
 ILI9341SPI graphic(PIN_GRAPHICS_CS, PIN_GRAPHICS_DC, PIN_GRAPHICS_RESET);
 
