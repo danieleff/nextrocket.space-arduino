@@ -43,13 +43,21 @@ void Rocket7SegmentDisplay::loop() {
     write(data);
     
   } else {
+    launch_type *launch = settings.getLaunch();
+    if (launch == NULL) {
+        write("LOADING ");
+        return;
+    }
     
+    int32_t launch_time = atol(launch->launch_time);
+
+    int32_t time = launch_time - settings.time_downloaded - (millis() - httpClient.info_downloaded_millis) / 1000;
+
     if ((millis() - selected_launch_changed_millis) < 2000) {
-      write(data);
+      write(launch->rocket);
       return;
     }
 
-    int32_t time = launch_at_seconds - settings.time_downloaded - (millis() - httpClient.info_downloaded_millis) / 1000;
     boolean negative = false;
     if (time < 0) {
       negative = true;
@@ -62,11 +70,11 @@ void Rocket7SegmentDisplay::loop() {
     uint32_t days = (time / 60 / 60 / 24);
 
     if (seconds == 59) {
-      write(data);
+      write(launch->rocket);
       return;
     }
     
-    if (settings.launch.time_status == 'T') {
+    if (launch->time_status == 'T') {
       ledControl.setDigit(0, 0, seconds % 10, false);
       ledControl.setDigit(0, 1, seconds / 10, false);
     
@@ -118,11 +126,8 @@ void Rocket7SegmentDisplay::setMessage(const __FlashStringHelper *message8Chars)
   loop();
 }
 
-void Rocket7SegmentDisplay::setLaunch(int32_t launch_at_seconds, char* name8Chars) {
+void Rocket7SegmentDisplay::setLaunch() {
   show_launch = true;
-  
-  this->launch_at_seconds = launch_at_seconds;
-  memcpy(data, name8Chars, 8);
 }
 
 void Rocket7SegmentDisplay::write(char* message8Chars) {

@@ -44,7 +44,7 @@ static void http_client_got_response (uint8_t status, uint16_t off, uint16_t len
   //memcpy(settings.launches + offset, response + 1, len);
   httpClient.info_downloaded_millis = millis();
 
-  settings.loadLaunch(settings.selected_launch_id);
+  settings.setLaunch(settings.selected_launch_id);
   //Serial.println(settings.launch.rocket);
   
   httpClient.next_try_millis = millis() + SUCCESS_REQUEST_RATE;

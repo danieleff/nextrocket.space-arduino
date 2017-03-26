@@ -39,10 +39,6 @@ void setup () {
     settings.loadFromEEPROM();
   }
 
-Serial.println("--");
-Serial.println(settings.selected_launch_id);
-Serial.println("--");
-  
   if (digitalRead(PIN_BUTTON_MENU) == LOW) {
     demo_mode = true;
   }
@@ -110,10 +106,11 @@ void process_buttons() {
       } else {
         
         int index = settings.getIndex(settings.selected_launch_id, settings.launch_count);
+        index++;
         if (index >= settings.launch_count) {
           settings.selected_launch_id = SELECTED_IP;
         } else {
-          settings.selected_launch_id = settings.launches[index + 1].launch_id;
+          settings.selected_launch_id = settings.launches[index].launch_id;
         }
         
       }

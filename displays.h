@@ -14,13 +14,12 @@ class Rocket7SegmentDisplay {
     void loop();
     void setMessage(char* message8Chars);
     void setMessage(const __FlashStringHelper *message8Chars);
-    void setLaunch(int32_t launch_at_seconds, char* name8Chars);
+    void setLaunch();
   private:
     LedControl ledControl;
     void write(char* message8Chars);
 
     char data[8];
-    int32_t launch_at_seconds;
     bool show_launch;
     
 };

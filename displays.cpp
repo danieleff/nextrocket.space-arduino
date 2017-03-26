@@ -33,59 +33,40 @@ void Displays::loop() {
     rocket7SegmentDisplay.loop();
   #endif
   
-  int selected_current = -1;
+  int show_launch_id = -1;
 
   if (settings.selected_launch_id == SELECTED_IP) {
     
   } else if (settings.selected_launch_id == SELECTED_NEXT) {
     
-    selected_current = settings.launches[0].launch_id;
+    show_launch_id = settings.launches[0].launch_id;
     
   } else if (settings.selected_launch_id == SELECTED_CYCLE) {
     
-    selected_current = settings.launches[(millis() / SELECTED_CYCLE_DELAY_MILLIS) % settings.launch_count].launch_id;
+    show_launch_id = settings.launches[(millis() / SELECTED_CYCLE_DELAY_MILLIS) % settings.launch_count].launch_id;
     
   } else {
     
-    selected_current = settings.selected_launch_id;
+    show_launch_id = settings.selected_launch_id;
     
   }
 
-  if (settings.selected_launch != selected_current) {
-    settings.selected_launch = selected_current;
-    
+  if (settings.show_launch_id != show_launch_id) {
     selected_launch_changed_millis = millis();
 
-    settings.loadLaunch(settings.selected_launch);
+    settings.setLaunch(show_launch_id);
     
   }
   
-  int32_t launch_time = atol(settings.launch.launch_time);
-
-  int32_t seconds_left = launch_time - settings.time_downloaded - (millis() - httpClient.info_downloaded_millis) / 1000;
-
   if (settings.selected_launch_id == SELECTED_CYCLE && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
     setMessage(F("CYCLE               "));
-    //show_seconds_left_digit_display(seconds_left, false);
     
   } else if (settings.selected_launch_id == SELECTED_NEXT && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
     setMessage(F("UPCOMING            "));
-    //show_seconds_left_digit_display(seconds_left, false);
     
-  } else if (
-        settings.launch.launch_time == 0
-        || seconds_left % 60 == 59 
-        || (millis() - selected_launch_changed_millis) < MENU_BUTTON_SHOW_NAME_MILLIS) {
-    //write(settings.launch.rocket);
-    
-    //show_seconds_left_digit_display(seconds_left, false);
-    
-    rocket7SegmentDisplay.setLaunch(launch_time, settings.launch.rocket);
   } else {
-    
-    //show_seconds_left_digit_display(seconds_left, true);
-    
-    rocket7SegmentDisplay.setLaunch(launch_time, settings.launch.rocket);
+
+    rocket7SegmentDisplay.setLaunch();
   }
 
   //show_ip_digit_display();
@@ -108,6 +89,7 @@ void show_seconds_left_digit_display(int32_t time, boolean onDigitDisplay, char*
 
   //char buf[16 + 1] = {0};
   
+  /*
   if (settings.launch.time_status == TIME_STATUS_TIME) {
       sprintf(buf, "%2d days %02d:%02d:%02d", days, hours, minutes, seconds);
   } else if (settings.launch.time_status == TIME_STATUS_DAY) {
@@ -115,7 +97,8 @@ void show_seconds_left_digit_display(int32_t time, boolean onDigitDisplay, char*
   } else if (settings.launch.time_status == TIME_STATUS_MONTH) {
       sprintf(buf, "%2d days", days); //TODO months
   }
-
+  */
+  
 }
 
 void Displays::setMessage(const __FlashStringHelper *string) {

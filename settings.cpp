@@ -86,15 +86,16 @@ int Settings::getIndex(int launch_id, int return_if_not_found) {
   
 }
 
-void Settings::loadLaunch(int launch_id) {
-  
+launch_type *Settings::getLaunch() {
   for(int i = 0; i < launch_count; i++) {
-    if (launches[i].launch_id == launch_id) {
-      launch = launches[i];
-      break;
+    if (launches[i].launch_id == show_launch_id) {
+      return &launches[i];
     }
   }
-  
+  return NULL;
 }
 
+void Settings::setLaunch(int launch_id) {
+  show_launch_id = launch_id;
+}
 

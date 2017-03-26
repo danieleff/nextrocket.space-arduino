@@ -14,15 +14,6 @@ const char TIME_STATUS_MONTH = 'M';
 const char TIME_STATUS_DAY = 'D';
 const char TIME_STATUS_TIME = 'T';
 
-
-
-/*
-struct launch_type {
-  int32_t seconds_left;
-  char name[9];
-};
-*/
-
 struct launch_type {
   char launch_id[6 + 1];
   char launch_status;
@@ -50,12 +41,12 @@ class Settings {
     //Things not to save
     uint8_t launch_count = 1;
     
-    launch_type launch;
     int getIndex(int launch_id, int return_if_not_found);
-    void loadLaunch(int index);
+    void setLaunch(int launch_id);
+    launch_type *getLaunch();
     void processApiResponse(int index, uint8_t data);
     
-    uint32_t selected_launch = 0; //selected launch index
+    int32_t show_launch_id = -1;
     
     uint32_t time_downloaded;
 
