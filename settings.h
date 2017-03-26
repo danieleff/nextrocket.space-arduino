@@ -39,7 +39,7 @@ class Settings {
     int32_t selected_launch_id = SELECTED_IP;
 
     //Things not to save
-    uint8_t launch_count = 1;
+    uint8_t launch_count = 0;
     
     int getIndex(int launch_id, int return_if_not_found);
     void setLaunch(int launch_id);

@@ -145,3 +145,7 @@ void Rocket7SegmentDisplay::write(char* message8Chars) {
   
 }
 
+void Rocket7SegmentDisplay::setIntensity(int intensity) {
+  ledControl.setIntensity(0, intensity);
+}
+

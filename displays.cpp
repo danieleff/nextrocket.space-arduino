@@ -111,3 +111,7 @@ void Displays::refresh() {
   
 }
 
+void Displays::setIntensity(int intensity) {
+  rocket7SegmentDisplay.setIntensity(intensity);
+}
+

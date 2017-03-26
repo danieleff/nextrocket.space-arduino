@@ -15,6 +15,7 @@ class Rocket7SegmentDisplay {
     void setMessage(char* message8Chars);
     void setMessage(const __FlashStringHelper *message8Chars);
     void setLaunch();
+    void setIntensity(int intensity);
   private:
     LedControl ledControl;
     void write(char* message8Chars);
@@ -47,6 +48,7 @@ class Displays {
     void loop();
     void setMessage(const __FlashStringHelper *string);
     void refresh();
+    void setIntensity(int intensity);
     
   private:
     Rocket7SegmentDisplay rocket7SegmentDisplay;
