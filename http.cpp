@@ -30,20 +30,21 @@ static void http_client_got_response (uint8_t status, uint16_t off, uint16_t len
   //if (len > (data_len - offset)) {
   //  len = data_len - offset;
   //}
-  
-  if (settings.selected_menu > settings.launch_count) {
-    settings.selected_menu = SELECTED_CYCLE;
-  }
 
   for(int i=0; i<len; i++) {
     settings.processApiResponse(i, response[i]);
   }
+
+  if (settings.getIndex(settings.selected_launch_id, -1) == -1) {
+    settings.selected_launch_id = SELECTED_CYCLE;
+  }
+
   Serial.println(settings.launch_count);
 
   //memcpy(settings.launches + offset, response + 1, len);
   httpClient.info_downloaded_millis = millis();
 
-  settings.loadLaunch(0);
+  settings.loadLaunch(settings.selected_launch_id);
   //Serial.println(settings.launch.rocket);
   
   httpClient.next_try_millis = millis() + SUCCESS_REQUEST_RATE;

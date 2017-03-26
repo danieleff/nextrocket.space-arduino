@@ -35,19 +35,19 @@ void Displays::loop() {
   
   int selected_current = -1;
 
-  if (settings.selected_menu == SELECTED_IP) {
+  if (settings.selected_launch_id == SELECTED_IP) {
     
-  } else if (settings.selected_menu == SELECTED_NEXT) {
+  } else if (settings.selected_launch_id == SELECTED_NEXT) {
     
-    selected_current = 0;
+    selected_current = settings.launches[0].launch_id;
     
-  } else if (settings.selected_menu == SELECTED_CYCLE) {
+  } else if (settings.selected_launch_id == SELECTED_CYCLE) {
     
-    selected_current = (millis() / SELECTED_CYCLE_DELAY_MILLIS) % settings.launch_count;
+    selected_current = settings.launches[(millis() / SELECTED_CYCLE_DELAY_MILLIS) % settings.launch_count].launch_id;
     
   } else {
     
-    selected_current = settings.selected_menu;
+    selected_current = settings.selected_launch_id;
     
   }
 
@@ -64,11 +64,11 @@ void Displays::loop() {
 
   int32_t seconds_left = launch_time - settings.time_downloaded - (millis() - httpClient.info_downloaded_millis) / 1000;
 
-  if (settings.selected_menu == SELECTED_CYCLE && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
+  if (settings.selected_launch_id == SELECTED_CYCLE && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
     setMessage(F("CYCLE               "));
     //show_seconds_left_digit_display(seconds_left, false);
     
-  } else if (settings.selected_menu == SELECTED_NEXT && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
+  } else if (settings.selected_launch_id == SELECTED_NEXT && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
     setMessage(F("UPCOMING            "));
     //show_seconds_left_digit_display(seconds_left, false);
     

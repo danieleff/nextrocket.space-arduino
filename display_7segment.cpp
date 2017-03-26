@@ -31,7 +31,7 @@ void Rocket7SegmentDisplay::setup() {
 }
 
 void Rocket7SegmentDisplay::loop() {
-  if (settings.selected_menu == SELECTED_IP) {
+  if (settings.selected_launch_id == SELECTED_IP) {
     char buf[16];
     sprintf(buf, "IP.%d.%d.%d.%d", ether.myip[0], ether.myip[1], ether.myip[2], ether.myip[3]);
     int max_offset = strlen(buf) - 7;

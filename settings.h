@@ -45,24 +45,24 @@ class Settings {
     //Things to save
     char url_user_part[60] = "1|";
     uint8_t intensity = 6;
-    int32_t selected_menu = SELECTED_IP;
+    int32_t selected_launch_id = SELECTED_IP;
 
     //Things not to save
     uint8_t launch_count = 1;
     
     launch_type launch;
+    int getIndex(int launch_id, int return_if_not_found);
     void loadLaunch(int index);
     void processApiResponse(int index, uint8_t data);
     
-    uint8_t selected_launch = 0; //selected launch index
+    uint32_t selected_launch = 0; //selected launch index
     
     uint32_t time_downloaded;
 
-
+    launch_type launches[MAX_LAUNCH_COUNT];
+    
   private:
     void setLaunchByte(int index, uint8_t data);
-
-    launch_type launches[MAX_LAUNCH_COUNT];
     
     /*
     //Thins not to save

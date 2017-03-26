@@ -38,6 +38,10 @@ void setup () {
   if (digitalRead(PIN_BUTTON_INTENSITY) == HIGH) {
     settings.loadFromEEPROM();
   }
+
+Serial.println("--");
+Serial.println(settings.selected_launch_id);
+Serial.println("--");
   
   if (digitalRead(PIN_BUTTON_MENU) == LOW) {
     demo_mode = true;
@@ -94,12 +98,26 @@ void process_buttons() {
       selected_launch_changed_millis = millis();
       
       displays.refresh();
-      
-      settings.selected_menu++;
-      if (settings.selected_menu >= settings.launch_count) {
-        settings.selected_menu = SELECTED_IP;
-      }
 
+      if (settings.selected_launch_id < SELECTED_NEXT) {
+        
+        settings.selected_launch_id++;
+        
+      } else if (settings.selected_launch_id == SELECTED_NEXT) {
+        
+        settings.selected_launch_id = settings.launches[0].launch_id;
+        
+      } else {
+        
+        int index = settings.getIndex(settings.selected_launch_id, settings.launch_count);
+        if (index >= settings.launch_count) {
+          settings.selected_launch_id = SELECTED_IP;
+        } else {
+          settings.selected_launch_id = settings.launches[index + 1].launch_id;
+        }
+        
+      }
+      
       settings.saveToEEPROM();
     }
   }

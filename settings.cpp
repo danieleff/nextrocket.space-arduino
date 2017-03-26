@@ -2,13 +2,13 @@
 #include <EEPROM.h>
 
 const int ROM_HEADER_ID = 0x23;
-const int ROM_HEADER_VERSION = 0x01;
+const int ROM_HEADER_VERSION = 0x02;
 
 const int ROM_URL_PART_START = 0x02;
 const int ROM_INTENSITY_START = ROM_URL_PART_START + sizeof(settings.url_user_part);
 const int ROM_SELECTED_MENU_START = ROM_INTENSITY_START + sizeof(settings.intensity);
 
-const int ROM_LAUNCHES = ROM_SELECTED_MENU_START + sizeof(settings.selected_menu);
+const int ROM_LAUNCHES = ROM_SELECTED_MENU_START + sizeof(settings.selected_launch_id);
 
 Settings settings;
 
@@ -20,10 +20,10 @@ void Settings::loadFromEEPROM() {
       url_user_part[i] = EEPROM.read(ROM_URL_PART_START + i);
     }
     intensity = EEPROM.read(ROM_INTENSITY_START);
-    selected_menu = EEPROM.read(ROM_SELECTED_MENU_START);
-    selected_menu |= EEPROM.read(ROM_SELECTED_MENU_START + 1) << 8;
-    selected_menu |= EEPROM.read(ROM_SELECTED_MENU_START + 2) << 16;
-    selected_menu |= EEPROM.read(ROM_SELECTED_MENU_START + 3) << 24;
+    selected_launch_id = EEPROM.read(ROM_SELECTED_MENU_START);
+    selected_launch_id |= EEPROM.read(ROM_SELECTED_MENU_START + 1) << 8;
+    selected_launch_id |= EEPROM.read(ROM_SELECTED_MENU_START + 2) << 16;
+    selected_launch_id |= EEPROM.read(ROM_SELECTED_MENU_START + 3) << 24;
   }
   #endif
   
@@ -38,10 +38,10 @@ void Settings::saveToEEPROM() {
       EEPROM.update(ROM_URL_PART_START + i, url_user_part[i]);
     }
     EEPROM.update(ROM_INTENSITY_START, intensity);
-    EEPROM.update(ROM_SELECTED_MENU_START, selected_menu & 0xFF);
-    EEPROM.update(ROM_SELECTED_MENU_START + 1, (selected_menu >> 8) & 0xFF);
-    EEPROM.update(ROM_SELECTED_MENU_START + 2, (selected_menu >> 16) & 0xFF);
-    EEPROM.update(ROM_SELECTED_MENU_START + 3, (selected_menu >> 24) & 0xFF);
+    EEPROM.update(ROM_SELECTED_MENU_START, selected_launch_id & 0xFF);
+    EEPROM.update(ROM_SELECTED_MENU_START + 1, (selected_launch_id >> 8) & 0xFF);
+    EEPROM.update(ROM_SELECTED_MENU_START + 2, (selected_launch_id >> 16) & 0xFF);
+    EEPROM.update(ROM_SELECTED_MENU_START + 3, (selected_launch_id >> 24) & 0xFF);
     
     EEPROM.update(0, ROM_HEADER_ID);
     EEPROM.update(1, ROM_HEADER_VERSION);
@@ -75,13 +75,26 @@ void Settings::setLaunchByte(int index, uint8_t data) {
     ((uint8_t*)(&launches))[index] = data;
 }
 
-void Settings::loadLaunch(int index) {
-  /*
-  for(int i = 0; i < sizeof(launch); i++) {
-    ((uint8_t*)(&launch))[i] = EEPROM.read(ROM_LAUNCHES + i + index * sizeof(launch));
+int Settings::getIndex(int launch_id, int return_if_not_found) {
+
+  for(int i = 0; i < launch_count; i++) {
+    if (launches[i].launch_id == launch_id) {
+      return i;
+    }
   }
-  */
-  launch = launches[index];
+  return return_if_not_found;
+  
+}
+
+void Settings::loadLaunch(int launch_id) {
+  
+  for(int i = 0; i < launch_count; i++) {
+    if (launches[i].launch_id == launch_id) {
+      launch = launches[i];
+      break;
+    }
+  }
+  
 }
 
 
