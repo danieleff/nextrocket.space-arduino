@@ -35,11 +35,11 @@ void setup () {
 
   displays.setMessage(F("SETUP   "));
 
-  if (digitalRead(PIN_BUTTON_INTENSITY) == LOW) {
+  if (digitalRead(PIN_BUTTON_INTENSITY) == HIGH) {
     settings.loadFromEEPROM();
   }
   
-  if (digitalRead(PIN_BUTTON_MENU) == HIGH) {
+  if (digitalRead(PIN_BUTTON_MENU) == LOW) {
     demo_mode = true;
   }
 
@@ -73,10 +73,7 @@ void loop () {
   process_buttons();
 }
 
-void process_buttons() {
-  boolean both_buttons_pressed = (digitalRead(PIN_BUTTON_INTENSITY) == LOW) && (digitalRead(PIN_BUTTON_MENU) == LOW);
-  displays.showIP(both_buttons_pressed);
-  
+void process_buttons() {  
   if (millis() - button_intensity_millis> 200) {
     if (digitalRead(PIN_BUTTON_INTENSITY) == LOW) {
       button_intensity_millis = millis();
@@ -100,7 +97,7 @@ void process_buttons() {
       
       settings.selected_menu++;
       if (settings.selected_menu >= settings.launch_count) {
-        settings.selected_menu = SELECTED_CYCLE;
+        settings.selected_menu = SELECTED_IP;
       }
 
       settings.saveToEEPROM();

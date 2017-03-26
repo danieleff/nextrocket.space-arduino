@@ -34,38 +34,34 @@ void Displays::loop() {
   #endif
   
   int selected_current = -1;
-  
-  if (settings.selected_menu == SELECTED_NEXT) {
+
+  if (settings.selected_menu == SELECTED_IP) {
     
-    selected_current = 1; //TODO
+  } else if (settings.selected_menu == SELECTED_NEXT) {
     
-    
-    int32_t max = INT32_MAX;
-    for(int i = 0; i < settings.launch_count; i++) {
-      settings.loadLaunch(i);
-      /*if (max > settings.launch.launch_time && settings.launch.launch_time > 0) {
-        selected_current = i;
-        max = settings.launch.launch_time;
-      }*/
-    }
-    
+    selected_current = 0;
     
   } else if (settings.selected_menu == SELECTED_CYCLE) {
+    
     selected_current = (millis() / SELECTED_CYCLE_DELAY_MILLIS) % settings.launch_count;
+    
   } else {
+    
     selected_current = settings.selected_menu;
+    
   }
 
   if (settings.selected_launch != selected_current) {
     settings.selected_launch = selected_current;
+    
     selected_launch_changed_millis = millis();
+
+    settings.loadLaunch(settings.selected_launch);
+    
   }
   
-  settings.loadLaunch(settings.selected_launch);
-
   int32_t launch_time = atol(settings.launch.launch_time);
 
-  
   int32_t seconds_left = launch_time - settings.time_downloaded - (millis() - httpClient.info_downloaded_millis) / 1000;
 
   if (settings.selected_menu == SELECTED_CYCLE && (millis() - button_menu_millis) < MENU_BUTTON_SHOW_MENU_MILLIS) {
@@ -131,14 +127,4 @@ void Displays::setMessage(const __FlashStringHelper *string) {
 void Displays::refresh() {
   
 }
-
-void Displays::showIP(bool show) {
-  if (this->show_ip == show) {
-    return;
-  }
-  
-  this->show_ip = show;
-  rocket7SegmentDisplay.showIP(show);
-}
-
 

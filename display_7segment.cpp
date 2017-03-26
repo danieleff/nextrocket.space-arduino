@@ -31,9 +31,9 @@ void Rocket7SegmentDisplay::setup() {
 }
 
 void Rocket7SegmentDisplay::loop() {
-  if (show_ip) {
-    char buf[13];
-    sprintf(buf, "%d.%d.%d.%d", ether.myip[0], ether.myip[1], ether.myip[2], ether.myip[3]);
+  if (settings.selected_menu == SELECTED_IP) {
+    char buf[16];
+    sprintf(buf, "IP.%d.%d.%d.%d", ether.myip[0], ether.myip[1], ether.myip[2], ether.myip[3]);
     int max_offset = strlen(buf) - 7;
     int offset = (millis() / 1000) % max_offset;
     write(buf + offset);
@@ -139,13 +139,4 @@ void Rocket7SegmentDisplay::write(char* message8Chars) {
   }
   
 }
-
-
-void Rocket7SegmentDisplay::showIP(bool show) {
-  
-  this->show_ip = show;
-  
-  loop();
-}
-
 

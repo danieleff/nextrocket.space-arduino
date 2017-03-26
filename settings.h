@@ -45,7 +45,7 @@ class Settings {
     //Things to save
     char url_user_part[60] = "1|";
     uint8_t intensity = 6;
-    int32_t selected_menu = SELECTED_CYCLE;
+    int32_t selected_menu = SELECTED_IP;
 
     //Things not to save
     uint8_t launch_count = 1;

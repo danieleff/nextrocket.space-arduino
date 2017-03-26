@@ -15,7 +15,6 @@ class Rocket7SegmentDisplay {
     void setMessage(char* message8Chars);
     void setMessage(const __FlashStringHelper *message8Chars);
     void setLaunch(int32_t launch_at_seconds, char* name8Chars);
-    void showIP(boolean show);
   private:
     LedControl ledControl;
     void write(char* message8Chars);
@@ -24,7 +23,6 @@ class Rocket7SegmentDisplay {
     int32_t launch_at_seconds;
     bool show_launch;
     
-    bool show_ip;
 };
 
 class RocketCharDisplay {
@@ -50,12 +48,9 @@ class Displays {
     void loop();
     void setMessage(const __FlashStringHelper *string);
     void refresh();
-    void showIP(boolean show);
     
   private:
     Rocket7SegmentDisplay rocket7SegmentDisplay;
-
-    bool show_ip;
 };
 
 extern Displays displays;
