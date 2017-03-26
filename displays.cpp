@@ -39,11 +39,11 @@ void Displays::loop() {
     
   } else if (settings.selected_launch_id == SELECTED_NEXT) {
     
-    show_launch_id = settings.launches[0].launch_id;
+    show_launch_id = atoi(settings.launches[0].launch_id);
     
   } else if (settings.selected_launch_id == SELECTED_CYCLE) {
     
-    show_launch_id = settings.launches[(millis() / SELECTED_CYCLE_DELAY_MILLIS) % settings.launch_count].launch_id;
+    show_launch_id = atoi(settings.launches[(millis() / SELECTED_CYCLE_DELAY_MILLIS) % settings.launch_count].launch_id);
     
   } else {
     

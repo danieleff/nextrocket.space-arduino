@@ -78,7 +78,7 @@ void Settings::setLaunchByte(int index, uint8_t data) {
 int Settings::getIndex(int launch_id, int return_if_not_found) {
 
   for(int i = 0; i < launch_count; i++) {
-    if (launches[i].launch_id == launch_id) {
+    if (atoi(launches[i].launch_id) == launch_id) {
       return i;
     }
   }
@@ -88,7 +88,7 @@ int Settings::getIndex(int launch_id, int return_if_not_found) {
 
 launch_type *Settings::getLaunch() {
   for(int i = 0; i < launch_count; i++) {
-    if (launches[i].launch_id == show_launch_id) {
+    if (atoi(launches[i].launch_id) == show_launch_id) {
       return &launches[i];
     }
   }
